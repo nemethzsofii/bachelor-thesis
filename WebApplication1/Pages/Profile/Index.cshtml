@@ -1,0 +1,160 @@
+﻿@page
+@model WebApplication1.Pages.Profile.IndexModel
+@{
+	ViewData["Title"] = "Profile";
+}
+<input id="current-user-id" type="hidden" value="@Model.UserData.Id" />
+<div class="card shadow mb-4">
+	<div class="card-header py-3">
+		<h4 class="m-0 font-weight-bold text-primary">Profile Page</h4>
+		<h7 class="m-0 font-weight-bold text-primary">This page serves as your personal dashboard, where you can access and review all the data managed by this application. You can also update your preferences, modify personal information, and customize settings to tailor the experience to your needs.</h7>
+	</div>
+	<div class="card-body">
+		<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+			<thead>
+				<tr>
+					<th>Attribute</th>
+					<th>Value</th>
+					<th>Action</th>
+				</tr>
+			</thead>
+		<tr>
+			<th>Username</th>
+			<th>@Model.UserData.Username</th>
+			<th>
+					<div class="full-container username-container">
+						<button class="btn btn-secondary change-btn">
+							Change
+						</button>
+						<div class="change-container" style="display:none">
+							<input type="email" class="change-input" value="" />
+							<button class="save-btn btn-success">Save</button>
+							<button class="cancel-btn btn-outline-danger">Cancel</button>
+						</div>
+					</div>
+			</th>
+		</tr>
+		<tr>
+			<th>Email</th>
+			<th>@Model.UserData.Email</th>
+				<th>
+					<div class="full-container email-container">
+						<button class="btn btn-secondary change-btn">
+							Change
+						</button>
+						<div class="change-container" style="display:none">
+							<input type="email" class="change-input" value="" />
+							<button class="save-btn btn-success">Save</button>
+							<button class="cancel-btn btn-outline-danger">Cancel</button>
+						</div>
+					</div>
+				</th>
+		</tr>
+		<tr>
+			<th>Fullname</th>
+			<th>@Model.UserData.Fullname</th>
+				<th>
+					<div class="full-container fullname-container">
+						<button class="btn btn-secondary change-btn">
+							Change
+						</button>
+						<div class="change-container" style="display:none">
+							<input type="email" class="change-input" value="" />
+							<button class="save-btn btn-success">Save</button>
+							<button class="cancel-btn btn-outline-danger">Cancel</button>
+						</div>
+					</div>
+				</th>
+		</tr>
+		</table>
+
+		<button class="btn btn-primary btn-icon-split change-pw-btn">Change Password</button>
+	</div>
+</div>
+<script defer>
+	document.addEventListener("DOMContentLoaded", function () {
+		document.body.addEventListener("click", function (event) {
+			console.log("something clicked");
+			// case: CHANGE BUTTON
+			if (event.target.classList.contains("change-btn")) {
+				console.log("change button clicked!");
+				var container = event.target.closest(".full-container");
+				var changeContainer = container.querySelector(".change-container");
+
+				changeContainer.style.display = "block";
+				event.target.style.display = "none";
+			}
+
+			// case: CANCEL BUTTON
+			if (event.target.classList.contains("cancel-btn")) {
+				console.log("cancel button clicked!");
+				var container = event.target.closest(".full-container");
+				var changeButton = container.querySelector(".change-btn");
+				var changeInput = container.querySelector(".change-input");
+				var changeContainer = container.querySelector(".change-container");
+
+				changeInput.value = "";
+				changeContainer.style.display = "none";
+				changeButton.style.display = "block";
+			}
+
+			// case: SAVE BUTTON
+			if (event.target.classList.contains("save-btn")){
+				console.log("save button clicked!");
+				var currentUserId = parseInt(document.getElementById("current-user-id").value, 10);
+				var container = event.target.closest(".full-container");
+				var input = container.querySelector(".change-input");
+				if (container.classList.contains("email-container")){
+					// case: change e-mail
+					console.log("saving email!");
+					updateUser(currentUserId, {"Email": input.value})
+				}else if (container.classList.contains("fullname-container")){
+					// case: change fullname
+					console.log("saving fullname!");
+					updateUser(currentUserId, {"Fullname": input.value})
+				}else if (container.classList.contains("username-container")){
+					// case: change username
+					console.log("saving username!");
+					updateUser(currentUserId, {"Username": input.value})
+				} else{
+					console.log("invalid save class!");
+				}
+			}
+
+			// case: CHANGE PW BUTTON
+			if (event.target.classList.contains("change-pw-btn")){
+				console.log("change pw button clicked!");
+				window.location.href = "/Account/ChangePassword";
+			}
+		});
+
+		async function updateUser(id, updateData) {
+			const response = await fetch(`api/User/${id}`, {
+				method: "PUT",
+				 headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json"
+				},
+				credentials: "include",
+				body: JSON.stringify(updateData)
+			});
+
+			if (!response.ok) {
+				const errorMessage = await response.json();
+				if (errorMessage["message"] == "Invalid email format.") {
+					alert("Invalid email format!");
+				}else if(errorMessage["message"] == "Username already taken."){
+					alert("Username already taken!");
+				}else {
+					console.log(errorMessage);
+					alert("Something went wrong!");
+				}
+				console.error(`Error: ${response.status} - ${errorMessage}`);
+				return "User update failed.";
+			} else {
+				location.reload();
+				return "User updated successfully!";
+			}
+		}
+	});
+</script>

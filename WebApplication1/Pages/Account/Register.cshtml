@@ -1,0 +1,74 @@
+﻿@page
+@model WebApplication1.Pages.Account.RegisterModel
+
+@{
+    Layout = null; // Remove layout if you want a standalone register page
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Register</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.css" rel="stylesheet">
+</head>
+<body>
+    <section class="vh-100" style="background-color: #4e73df;">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col col-xl-10">
+                    <div class="card" style="border-radius: 1rem;">
+                        <div class="row g-0">
+                            <!-- Image Column -->
+                            <div class="col-md-6 col-lg-5 d-flex justify-content-center align-items-center">
+                                <img src="~/img/login_money_icon1_resized-removebg.png"
+                                     alt="login form" class="img-fluid" style="border-radius: 1rem; max-width: 100%; height: auto;" />
+                            </div>
+                            <!-- Content Column -->
+                            <div class="col-md-6 col-lg-7 d-flex align-items-center">
+                                <div class="card-body p-4 p-lg-5 text-black">
+                                    <h5 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Create an account</h5>
+                                    <p style="color:red;">@Model.ErrorMessage</p>
+                                    <form method="post">
+                                        <div class="form-outline mb-4">
+                                            <input asp-for="RegisterData.Email" type="email" id="form2Example17" class="form-control form-control-lg" required />
+                                            <label asp-for="RegisterData.Email" class="form-label" for="form2Example17">E-mail</label>
+                                        </div>
+                                        <div class="form-outline mb-4">
+                                            <input asp-for="RegisterData.Username" type="text" id="form2Example17" class="form-control form-control-lg" required />
+                                            <label asp-for="RegisterData.Username" class="form-label" for="form2Example17">Username</label>
+                                        </div>
+                                        <div class="form-outline mb-4">
+                                            <input asp-for="RegisterData.Fullname" type="text" id="form2Example27" class="form-control form-control-lg" required />
+                                            <label asp-for="RegisterData.Fullname" class="form-label" for="form2Example27">Fullname</label>
+                                        </div>
+                                        <div class="form-outline mb-4">
+                                            <input asp-for="RegisterData.Password" type="password" id="form2Example17" class="form-control form-control-lg" required />
+                                            <label asp-for="RegisterData.Password" class="form-label" for="form2Example17">Password</label>
+                                        </div>
+                                        <div class="pt-1 mb-4">
+                                            <button class="btn btn-dark btn-lg btn-block" type="submit" value="Register">Register</button>
+                                        </div>
+                                    </form>
+                                    <div style="display: flex">
+                                        <p>Already have an account?&nbsp;</p>
+                                        <p class="mb-5 pb-lg-2" style="color: #393f81;">
+                                            <a asp-page="Login" style="color: #393f81;">Login here</a>
+                                        </p>
+                                    </div>
+                                    <a href="#" class="small text-muted">Terms of use.</a>
+                                    <a href="#" class="small text-muted">Privacy policy</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
+</body>
+</html>
