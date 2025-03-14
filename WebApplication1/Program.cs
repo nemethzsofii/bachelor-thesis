@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
-using WebApplication1.Data;
-using WebApplication1.Model;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
 using WebApplication1.Model;
 

@@ -15,25 +15,10 @@ using Microsoft.AspNetCore.Identity;
 public class UserController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
-    private readonly UserManager<User> _userManager;
 
-    public UserController(UserManager<User> userManager, ApplicationDbContext context)
+    public UserController(ApplicationDbContext context)
     {
-        _userManager = userManager;
         _context = context;
-    }
-
-    // GET: api/User/GetCurrentUser
-    [HttpGet("GetCurrentUser")]
-    public async Task<ActionResult<User>> GetCurrentUser()
-    {
-        var user = await _userManager.GetUserAsync(User);  // Get the current user
-        if (user == null)
-        {
-            return Unauthorized();  // If no authenticated user is found
-        }
-
-        return Ok(user);  // Return the current user object
     }
 
     // 🔹 GET: api/User (Fetch all users)

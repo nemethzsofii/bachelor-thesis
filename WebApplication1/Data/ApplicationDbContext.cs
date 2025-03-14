@@ -11,5 +11,8 @@ namespace WebApplication1.Data
 
         // Add your DbSet properties here
         public DbSet<User> Users { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Category> Categories { get; set; }
+
     }
 }
