@@ -1,42 +1,24 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace WebApplication1.Model
 {
     public class Transaction
     {
-        [Key]
         public int Id { get; set; }
 
-        [Required]
+        [Column("user_id")]
         public int UserId { get; set; }
-
-        [Required]
-        [Column(TypeName = "decimal(10,2)")]
         public decimal Amount { get; set; }
 
-        [Required]
-        public TransactionType Type { get; set; }  // Enum for type ('income', 'expense')
+        [Column("type")]
+        public string Type { get; set; }
 
-        public int? CategoryId { get; set; }  // Nullable because of ON DELETE SET NULL
-
-        [Column(TypeName = "datetime")]
+        [Column("category_id")]
+        public int? CategoryId { get; set; }  // Ensure this matches MySQL schema
         public DateTime Date { get; set; } = DateTime.UtcNow;
-
         public string? Description { get; set; }
-
-        // Navigation properties for relationships
-        [ForeignKey("UserId")]
-        public virtual User User { get; set; }
-
-        [ForeignKey("CategoryId")]
-        public virtual Category? Category { get; set; }
-    }
-
-    // Enum for transaction type
-    public enum TransactionType
-    {
-        Income,
-        Expense
     }
 }

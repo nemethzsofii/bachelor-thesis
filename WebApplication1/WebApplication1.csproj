@@ -26,7 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Pages\Finance\" />
     <Folder Include="Pages\Groups\" />
     <Folder Include="Pages\Reports\" />
     <Folder Include="Pages\Resources\" />

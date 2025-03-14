@@ -1,0 +1,313 @@
+﻿@page
+@model WebApplication1.Pages.Finance.IndexModel
+@{
+	ViewData["Title"] = "Finances";
+}
+<style>
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		border: 2px solid darkgray;
+		text-align: center;
+		border-radius: 15px;
+	}
+
+	td, th {
+		border: 1px solid #a9a9a9;
+		padding: 8px;
+	}
+
+	label {
+		font-weight: bold;
+	}
+</style>
+
+<input id="current-user-id" type="hidden" value="@Model.UserData.Id" />
+
+<div class="row">
+	<div class="col">
+		<div class="input-card income-card">
+			<div class="card border-left-success shadow h-100 py-2">
+				<div class="card-body">
+					<div class="row no-gutters align-items-center">
+						<div class="col mr-2">
+							<div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+								INCOME
+							</div>
+							<div class="h5 mb-0 font-weight-bold text-gray-400">New Income Entry</div>
+						</div>
+						<div class="col-auto">
+							<i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+						</div>
+
+						<div class="col-auto" style="margin-left: 10px">
+							<button class="add-btn btn btn-success" id="add-income-btn">Add</button>
+						</div>
+					</div>
+
+					<div id="income-input-div" class="input-container" style="display: none; margin-top: 13px">
+						<table style="padding: 3px">
+							<tr>
+								<td><label for="income-amount-input-field">Amount:</label></td>
+								<td><input class="input-amount" id="income-amount-input-field" name="income-amount-input-field" type="number" /></td>
+							</tr>
+							<tr>
+								<td><label for="income-desc-input-field">Description:</label></td>
+								<td><input class="input-desc" id="income-desc-input-field" name="income-desc-input-field" type="text" /></td>
+							</tr>
+						</table>
+
+						<button class="btn save-btn">SAVE</button>
+						<button class="btn cancel-btn">CANCEL</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col">
+			<div class="card shadow mb-4">
+				<!-- Card Header - Accordion -->
+				<a href="#income-collapse" class="d-block card-header py-3" data-toggle="collapse"
+				   role="button" aria-expanded="true" aria-controls="income-collapse">
+					<h6 class="m-0 font-weight-bold text-primary">History</h6>
+					<h8>Track Your Income History</h8>
+				</a>
+				<!-- Card Content - Collapse -->
+				<div class="collapse" id="income-collapse">
+					<div id="income-container" class="card-body"></div>
+				</div>
+			</div>
+	</div>
+</div>
+
+<div class="row" style="margin-top: 30px">
+	<div class="col">
+		<div class="input-card expense-card">
+			<div class="card border-left-info shadow h-100 py-2">
+				<div class="card-body">
+					<div class="row no-gutters align-items-center">
+						<div class="col mr-2">
+							<div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+								EXPENSE
+							</div>
+							<div class="h5 mb-0 font-weight-bold text-gray-400">New Expense Entry</div>
+						</div>
+						<div class="col-auto">
+							<i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+						</div>
+
+						<div class="col-auto" style="margin-left: 10px">
+							<button class="add-btn btn btn-info" id="add-income-btn">Add</button>
+						</div>
+					</div>
+
+					<div id="income-input-div" class="input-container" style="display: none; margin-top: 13px">
+						<table style="padding: 3px">
+							<tr>
+								<td><label for="income-amount-input-field">Amount:</label></td>
+								<td><input class="input-amount" id="income-amount-input-field" name="income-amount-input-field" type="number" /></td>
+							</tr>
+							<tr>
+								<td><label for="income-desc-input-field">Description:</label></td>
+								<td><input class="input-desc" id="income-desc-input-field" name="income-desc-input-field" type="text" /></td>
+							</tr>
+						</table>
+
+						<button class="btn save-btn">SAVE</button>
+						<button class="btn cancel-btn">CANCEL</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col">
+		<div class="card shadow mb-4">
+			<!-- Card Header - Accordion -->
+			<a href="#expense-collapse" class="d-block card-header py-3" data-toggle="collapse"
+			   role="button" aria-expanded="true" aria-controls="expense-collapse">
+				<h6 class="m-0 font-weight-bold text-primary">History</h6>
+				<h8>Track Your Expense History</h8>
+			</a>
+			<!-- Card Content - Collapse -->
+			<div class="collapse" id="expense-collapse">
+				<div id="expense-container" class="card-body"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script defer>
+	document.addEventListener("DOMContentLoaded", function () {
+		var currentUserId = parseInt(document.getElementById("current-user-id").value, 10);
+		document.body.addEventListener("click", function (event) {
+			console.log("something clicked");
+			// case: ADD INCOME
+			if (event.target.classList.contains("add-btn")) {
+				console.log("Add button clicked!");
+				var container = event.target.closest(".input-card");
+				var inputContainer = container.querySelector(".input-container");
+
+				inputContainer.style.display = "block";
+				event.target.style.display = "none";
+			}
+
+			// case: CANCEL BUTTON
+			if (event.target.classList.contains("cancel-btn")) {
+				console.log("cancel button clicked!");
+				var container = event.target.closest(".input-card");
+				var inputContainer = container.querySelector(".input-container");
+
+				var inputAmount = container.querySelector(".input-amount");
+				var inputDesc = container.querySelector(".input-desc");
+
+				var addButton =container.querySelector(".add-btn");
+
+				inputAmount.value = "";
+				inputDesc.value = "";
+				inputContainer.style.display = "none";
+				addButton.style.display = "block";
+			}
+
+			// case: SAVE BUTTON
+			if (event.target.classList.contains("save-btn")){
+				console.log("save button clicked!");
+				var container = event.target.closest(".input-card");
+				var inputAmount = container.querySelector(".input-amount").value;
+				var inputDesc = container.querySelector(".input-desc").value;
+
+				if (container.classList.contains("income-card")){
+					// case: add income
+					console.log("adding income!");
+					createTransaction(currentUserId, parseInt(inputAmount), "income", null, inputDesc);
+				}else if (container.classList.contains("expense-card")){
+					// case: add expense
+					console.log("adding expense!");
+					createTransaction(currentUserId, parseInt(inputAmount), "expense", null, inputDesc);
+				} else{
+					console.log("invalid save class!");
+				}
+			}
+		});
+			async function listAllTransactions(userId, type)
+			{
+				try {
+					var response = "";
+					if(!type){
+						response = await fetch(`api/Transaction/user/${userId}`, {
+						method: "GET",
+						headers: {
+							"Content-Type": "application/json"
+						}
+					});
+					}else{
+						response = await fetch(`api/Transaction/user/${userId}/type/${type}`, {
+						method: "GET",
+						headers: {
+							"Content-Type": "application/json"
+						}
+					});
+					}
+
+					if (!response.ok) {
+						throw new Error(`Error: ${response.status} - ${response.statusText}`);
+					}
+
+					var result = await response.json();
+					console.log("Listed transactions successfully:", result);
+					return result;
+				} catch (error) {
+					console.error("Failed to list transactions:", error);
+					return null;
+				}
+			}
+			async function createTransaction(userId, amount, type, categoryId, description) {
+				const transactionData = {
+					userId: userId,
+					amount: amount,
+					type: type,
+					categoryId: categoryId,
+					description: description
+				};
+
+				try {
+					const response = await fetch("api/Transaction", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify(transactionData)
+					});
+
+					if (!response.ok) {
+						throw new Error(`Error: ${response.status} - ${response.statusText}`);
+					}else{
+						alert("Saved successfully!");
+						location.reload();
+					}
+
+					var result = await response.json();
+					console.log("Transaction created successfully:", result);
+				} catch (error) {
+					console.error("Failed to create transaction:", error);
+				}
+			}
+
+			async function createHistoryCards(type, divId){
+				try {
+					var result = await listAllTransactions(currentUserId, type);
+
+					if(!result || result.length === 0) {
+						throw new Error("No transactions found.");
+					}
+
+					console.log(`Creating ${type} cards with: `, result);
+					
+					var container = document.getElementById(divId);
+
+					for(let i = 0; i < result.length; i ++){
+						var element = `
+						<div class="card shadow mb-4">
+								<!-- Card Header - Accordion -->
+								<a href="#income${result[i].id}" class="d-block card-header py-3" data-toggle="collapse"
+									role="button" aria-expanded="true" aria-controls="income${result[i].id}">
+									<h6 class="m-0 font-weight-bold text-primary">${type} (${formatISOTime(result[i].date)})</h6>
+								</a>
+								<!-- Card Content - Collapse -->
+								<div class="collapse" id="income${result[i].id}">
+									<div class="card-body">
+										<strong>Amount:</strong>
+										${result[i].amount} Ft<br>
+										<strong>Description:</strong>
+										${result[i].description} <br>
+										<strong>Category:</strong>
+										${result[i].category}
+									</div>
+								</div>
+							</div>
+						`;
+
+						container.innerHTML += element;
+					}
+				} catch (error) {
+					console.error("Failed to create income cards:", error);
+				}
+			}
+
+			function formatISOTime(isoString) {
+				const date = new Date(isoString);
+				return date.toLocaleString("hu-HU", {
+					year: "numeric",
+					month: "2-digit",
+					day: "2-digit",
+					hour: "2-digit",
+					minute: "2-digit",
+					hour12: false
+				}).replace(',', ' -');
+			}
+
+
+			// MAIN
+			createHistoryCards("income", "income-container");
+			createHistoryCards("expense", "expense-container");
+	});
+</script>

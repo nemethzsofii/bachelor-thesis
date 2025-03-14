@@ -133,7 +133,7 @@ public class UserController : ControllerBase
     }
 
     // Helper functions
-    public bool IsValidEmail(string emailaddress)
+    private bool IsValidEmail(string emailaddress)
     {
         try
         {
