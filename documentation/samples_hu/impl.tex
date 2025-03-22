@@ -1,7 +1,6 @@
 \chapter{Fejlesztői dokumentáció}
 \label{ch:impl}
-A következő fejezetben fogom az alkalmazást fejlesztői oldalról
-bemutatni. 
+ A következő fejezetben az alkalmazást fejlesztői szemszögből mutatom be. Részletesen kitérek az alkalmazás felépítésére, a használt technológiákra, az adatbázis-struktúrára, valamint a fejlesztés során követett elvekre és megoldásokra.
 
 \section{Architektúra}
 \begin{itemize}
@@ -24,7 +23,7 @@ bemutatni.
 \subsection{Architektúra leírása}
 A .NET-es integrált frontend és backend fejlesztés hatalmas előnye a rendszerezettség, a szabályszerű kommunikáció az egyes rétegek között (illetve ezen rétegek helyes elkülönölése), és a rengeteg beépített segédfüggvény/konfiguráció/cshtml tag. Kiemelném még a modellek használatát is, amelyek egyszerűbb és biztonságosabb (például SQL injection elleni védelem) adatbázis kezelést biztosítanak.
 
-Az egyes route-ok konfigurálása is meglehetősen letisztult ebben a keretrendszerben. A "Pages" mappa\footnote{A "Pages" mappa, ahogy a neve is mutatja, tartalmazza a weboldal egyes oldalait. Bővebb kifejtés a Frontend című fejezetben.} fájlstruktúrája alapján automatikusan létrejönnek a route-ok, ha a "Program.cs"-ben megadjuk a programnak, hogy hozza létre őket egy szimpla sorral:
+Az egyes route-ok konfigurálása is meglehetősen letisztult ebben a keretrendszerben. A "Pages" mappa\footnote{A "Pages" mappa, ahogy a neve is mutatja, tartalmazza a weboldal egyes oldalait. Bővebb kifejtés a Frontend című fejezetben.} fájlstruktúrája alapján automatikusan létrejönnek a route-ok, ha a "Program.cs"-ben megadjuk a programnak, hogy hozza létre őket:
 
 \lstset{caption={Route-ok konfigurálása}, label=src:routing}
 \begin{lstlisting}[language={[Sharp]C}]
@@ -101,7 +100,7 @@ Térjünk át a frontend réteg alkotóelemeire, és ezek működésére. Itt is
 
 \subsection{Layout}
 A "Pages" mappa tartalmazza az oldalakat. A keretrendszer ugyebár úgy működik, hogy minden oldal (Razor page) egy .cshtml és egy .cs
-fájl együtteséből áll össze. A Pages mappa ezeket a párosokat tartalmazza, további kisebb mappákra bontva a funkció csoportok alapján. Az alább mellékelt ábrából\ref{fig:my_image} látható tehát, hogy például a bejelentkező felületet a következő linken tudjuk elérni: "localhost:<<port>>AccountLogin".
+fájl együtteséből áll össze. A Pages mappa ezeket a párosokat tartalmazza, további kisebb mappákra bontva a funkció csoportok alapján. Az alább mellékelt ábrából (\ref{fig:pages-structure}. ábra) látható tehát, hogy például a bejelentkező felületet a következő linken tudjuk elérni: "localhost:<<port>>/Account/Login".
 
 \begin{figure}[H]
 	\centering
@@ -123,7 +122,7 @@ behelyezi az adott oldal HTML kódját ebbe a div HTML elembe. Ez
 automatikusan megtörténik az összes oldal esetében amelyre
 navigál a felhasználó. Ha valami miatt éppen nem ezt a sablont akarjuk követni egy oldalunkkal (például: Bejelentkező felület), akkor az adott oldal HTML kódjába beírhatjuk hogy ne sablont kövessen:
 
-\begin{lstlisting}[language={HTML}]
+\begin{lstlisting}[language={[Sharp]C}]
 	@{
 		Layout = null; // Remove layout if you want a standalone page
 	}
