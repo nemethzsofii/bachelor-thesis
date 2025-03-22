@@ -17,7 +17,7 @@ namespace WebApplication1.Model
         public string Type { get; set; }
 
         [Column("category_id")]
-        public int? CategoryId { get; set; }  // Ensure this matches MySQL schema
+        public int? CategoryId { get; set; }
         public DateTime Date { get; set; } = DateTime.UtcNow;
         public string? Description { get; set; }
     }
