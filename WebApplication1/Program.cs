@@ -55,12 +55,12 @@ namespace WebApplication1
             });
 
             // Add Session Services
-            builder.Services.AddDistributedMemoryCache(); // Required for storing sessions
+            builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(30); // Adjust session timeout as needed
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
                 options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true; // Required for GDPR compliance
+                options.Cookie.IsEssential = true; 
             });
 
             // Add HttpContextAccessor for accessing session in controllers
@@ -86,12 +86,10 @@ namespace WebApplication1
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            // Ensure routing is registered before authentication
             app.UseRouting();
 
             app.UseSession();
 
-            //  Ensure authentication & authorization middleware are in the correct order
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -99,7 +97,7 @@ namespace WebApplication1
             app.MapControllers();
             app.MapRazorPages();
 
-            // Handle "/" route properly to avoid infinite redirects
+            // Handle "/" route
             app.MapGet("/", (HttpContext httpContext) =>
             {
                 if (httpContext.User.Identity?.IsAuthenticated == true)
