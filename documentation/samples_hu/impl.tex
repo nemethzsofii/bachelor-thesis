@@ -1,129 +1,210 @@
 \chapter{Fejlesztői dokumentáció}
 \label{ch:impl}
+A következő fejezetben fogom az alkalmazást fejlesztői oldalról
+bemutatni. 
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis nibh leo, dapibus in elementum nec, aliquet id sem. Suspendisse potenti. Nullam sit amet consectetur nibh. Donec scelerisque varius turpis at tincidunt.
+\section{Architektúra}
+\begin{itemize}
+	\item Frontend: HTML\footnote{Mivel a C\# projekten
+		belül lett létrehozva a frontend is, ezért a .html helyett .cshtml
+		kiterjesztésű fájlok vannak. Ezek annyiban különböznek a 
+		HTML-től, hogy vannak bizonyos tagek, kulcsszavak, melyekkel
+		különleges dolgokat tudunk csinálni. A Frontend című fejezetben kerül ez a téma bővebb kifejtésre.}/CSS/JavaScript (és Bootstrap)
+	\item Backend: C\# (ASP.NET Web App (Razor Pages))
+	\item Adatbázis: MySQL relációs adatbázis
+\end{itemize}
 
+\begin{figure}[H]
+	\centering
+	\includegraphics[height=220px]{img/solution-explorer-screenshot}
+	\caption{Projekt struktúra}
+	\label{fig:project-structure}
+\end{figure}
 
-\section{Tételek, definíciók, megjegyzések}
+\subsection{Architektúra leírása}
+A .NET-es integrált frontend és backend fejlesztés hatalmas előnye a rendszerezettség, a szabályszerű kommunikáció az egyes rétegek között (illetve ezen rétegek helyes elkülönölése), és a rengeteg beépített segédfüggvény/konfiguráció/cshtml tag. Kiemelném még a modellek használatát is, amelyek egyszerűbb és biztonságosabb (például SQL injection elleni védelem) adatbázis kezelést biztosítanak.
 
-\begin{definition}
-Mauris tristique sollicitudin ultrices. Etiam tristique quam sit amet metus dictum imperdiet. Nunc id lorem sed nisl pulvinar aliquet vitae quis arcu. Morbi iaculis eleifend porttitor.
-\end{definition}
+Az egyes route-ok konfigurálása is meglehetősen letisztult ebben a keretrendszerben. A "Pages" mappa\footnote{A "Pages" mappa, ahogy a neve is mutatja, tartalmazza a weboldal egyes oldalait. Bővebb kifejtés a Frontend című fejezetben.} fájlstruktúrája alapján automatikusan létrejönnek a route-ok, ha a "Program.cs"-ben megadjuk a programnak, hogy hozza létre őket egy szimpla sorral:
 
-Maecenas rutrum eros sem, pharetra interdum nulla porttitor sit amet. In vitae viverra ante. Maecenas sit amet placerat orci, sed tincidunt velit. Vivamus mattis, enim vel suscipit elementum, quam odio venenatis elit, et mollis nulla nunc a risus. Praesent purus magna, tristique sed lacus sit amet, convallis malesuada magna. Phasellus faucibus varius purus, nec tristique enim porta vitae.
-
-\begin{theorem}
-Nulla finibus ante vel arcu tincidunt, ut consectetur ligula finibus. Mauris mollis lectus sed ipsum bibendum, ac ultrices erat dictum. Suspendisse faucibus euismod lacinia. Etiam vel odio ante.
-\end{theorem}
-\begin{proof}
-Etiam pulvinar nibh quis massa auctor congue. Pellentesque quis odio vitae sapien molestie vestibulum sit amet et quam. Pellentesque vel dui eget enim hendrerit finibus at sit amet libero. Quisque sollicitudin ultrices enim, nec porta magna imperdiet vitae. Cras condimentum nunc dui.
-\end{proof}
-
-Donec dapibus sodales ante, at scelerisque nunc laoreet sit amet. Mauris porttitor tincidunt neque, vel ullamcorper neque pulvinar et. Integer eu lorem euismod, faucibus lectus sed, accumsan felis. 
-
-\begin{remark}
-Nunc ornare mi at augue vulputate, eu venenatis magna mollis. Nunc sed posuere dui, et varius nulla. Sed mollis nibh augue, eget scelerisque eros ornare nec. Praesent porta, metus eget eleifend consequat, eros ligula eleifend ex, a pellentesque mi est vitae urna. Vivamus turpis nunc, iaculis non leo eget, mattis vulputate tellus.
-\end{remark}
-
-Fusce in aliquet neque, in pretium sem. Donec tincidunt tellus id lectus pretium fringilla. Nunc faucibus, erat pretium tempus tempor, tortor mi fringilla neque, ac congue ex dui vitae mauris. Donec pretium et quam a cursus.
-
-\begin{note}
-Aliquam vehicula luctus mi a pretium. Nulla quam neque, maximus nec velit in, aliquam mollis tortor. Aliquam erat volutpat. Curabitur vitae laoreet turpis. Integer id diam ligula.
-\end{note}
-
-Ut sollicitudin tempus urna et mollis. Aliquam et aliquam turpis, sed fermentum mauris. Nulla eget ex diam. Donec eget tellus pharetra, semper neque eget, rutrum diam.
-
-\subsection{Egyenletek, matematika}
-
-Duis suscipit ipsum nec urna blandit, $2 + 2 = 4$ pellentesque vehicula quam fringilla. Vivamus euismod, lectus sit amet euismod viverra, dolor metus consequat sapien, ut hendrerit nisl nulla id nisi. Nam in leo eu quam sollicitudin semper a quis velit.
-
-$$a^2 + b^2 = c^2$$
-
-Phasellus mollis, elit sed convallis feugiat, dolor quam dapibus nibh, suscipit consectetur lacus risus quis sem. Vivamus scelerisque porta odio, vitae euismod dolor accumsan ut.
-
-In mathematica, identitatem Euleri (equation est scriptor vti etiam notum) sit aequalitatem \ref{eq:euler}.~egyenlet:
-\begin{equation}\label{eq:euler}
-e^{i \times \pi} + 1 = 0
-\end{equation}
-
-Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nullam pulvinar purus at pharetra elementum.
-Aequationes adsignans aequationis signum:
-\begin{align}
-	A & = \frac{\pi r^2}{2} \\
-	  & = \frac{1}{2} \pi r^2
-\end{align}
-
-Proin tempor risus a efficitur condimentum. Cras lobortis ligula non sollicitudin euismod. Fusce non pellentesque nibh, non elementum tellus.
-Omissa numeratione aliquarum aequationum:
-\begin{align}
-	f(u) & =\sum_{j=1}^{n} x_jf(u_j) \nonumber \\
-	     & =\sum_{j=1}^{n} x_j \sum_{i=1}^{m} a_{ij}v_i \nonumber \\
-	     & =\sum_{j=1}^{n} \sum_{i=1}^{m} a_{ij}x_jv_i
-\end{align}
-
-\section{Forráskódok}
-
-Nulla sodales purus id mi consequat, eu venenatis odio pharetra. Cras a arcu quam. Suspendisse augue risus, pulvinar a turpis et, commodo aliquet turpis. Nulla aliquam scelerisque mi eget pharetra. Mauris sed posuere elit, ac lobortis metus. Proin lacinia sit amet diam sed auctor. Nam viverra orci id sapien sollicitudin, a aliquam lacus suscipit. Quisque ac tincidunt leo \ref{src:cpp}. és \ref{src:csharp}.~forráskód:
-
-\lstset{caption={Hello World in C++}, label=src:cpp}
-\begin{lstlisting}[language={C++}]
-#include <stdio>
-
-int main() 
-{
-	int c;
-	std::cout << "Hello World!" << std::endl;
-
-	std::cout << "Press any key to exit." << std::endl;
-	std::cin >> c;
-	
-	return 0;
-}
+\lstset{caption={Route-ok konfigurálása}, label=src:routing}
+\begin{lstlisting}[language={[Sharp]C}]
+	app.UseRouting();
 \end{lstlisting}
 
-\lstset{caption={Hello World in C\#}, label=src:csharp}
+A frontend és a backend közötti hagyományos JavaScript segítségével történő kommunikáción kívül, a cshtml formátum miatt lehetőség nyílik egyszerűbb esetekre közvetlen kapcsolatot is létesíteni a backend és a frontend között. Például:
+
+\lstset{caption={Frontend modell egy alkalmazása}, label=src:model}
+\begin{lstlisting}[language={HTML}]
+	<h1>Username</h1>
+	<p>@Model.UserData.Username</p>
+\end{lstlisting}
+
+Itt ugye mint látható a modellből tudunk adatot lekérdezni.
+De mi is a "Model" pontosan? Ugyebár az ASP .NET Web App keretrendszer úgy működik, hogy minden oldal (Razor page) egy .cshtml és egy .cs fájl együtteséből áll össze. A .cs kiterjesztésű fájl az adott oldal modellje. Itt definiálhatunk adatszerkezeteket és függvényeket, mint például az OnGet() és OnPost(), amelyek beépített (opcionális) metódusok, és ahogy a nevük is mutatja,
+az oldalról érkező GET és POST requesteket kezelik. Tehát például,
+ha az adott oldalon egy darab form-unk van, amit POST metódussal
+be akarunk küldeni a szervernek, ezt JS (JavaScript) kód írása nélkül biztonságosan meg tudjuk tenni.
+
+\section{Backend}
+
+Először is nézzük meg az alkalmazás egyes backendet felépítő elemeit, és azok funkcionalitását, kezelését.
+
+\subsection{appsettings.json}
+
+Az appsettings.json egy konfigurációs
+fájl. Ebben lehet alkalmazásszintű beállításokat tárolni, például:
+adatbáziskapcsolati stringeket,
+API kulcsokat,
+logolási beállításokat,
+vagy bármilyen egyedi, fejlesztő által definiált értéket.
+Az értékeket a program könnyen kiolvassa a beépített konfigurációs
+rendszer segítségével (pl. Configuration["Kulcs"] vagy
+erősen típusos binding-gel). Ez segít elkülöníteni a kódot a
+konfigurációtól, így könnyebb a karbantartás, környezetenkénti
+eltérés kezelése (pl. fejlesztői vs. éles környezet).
+
+\subsection{Program.cs}
+Ez a fő program fájl. Ebben készítjük
+elő a webalkalmazásunk tulajdonságait (persze a C\# egyszerűségének
+hála ez nem sok plusz feladattal jár, csupán a helyes függvényeket
+kell meghívni helyes sorrendben, attól függően, hogy hogyan
+akarjuk konfigurálni az alkalmazást.) Itt lehet beállítani a
+korábban említett routing-ot, az autentikációt, a cookie-kat,
+a session-t, a fejlesztői és éles környezeteket, és még sok minden mást. Itt tudjuk felkonfigurálni a modellt, az adatbázist
+és az oldalakat (Pages) is. ezután az app.Run() függvény hívással
+tudjuk ténylegesen elindítani a weboldalt, és ekkor localhoston
+el is kezd futni.
+
+\subsection{Modellek}
+Minden adatbázis táblának létrehozunk egy modellt
+(bővebb kifejtés az "adatbázis" pontban). Ezek mind C\# osztályok
+táblánként, és minden oszlop egy külön propertynek feleltethető meg.
+
+\subsection{API}
+Az ASP.NET-es struktúra úgy működik, hogy miután a 
+Program.cs-ben felkonfiguráltuk a szükséges dolgokat, megalkottuk a modelleket, létrehoztuk a HTML lapokat, már csak
+egy fontos dolog maradt hátra. A frontend-backend kommunikáció.
+Említés esett már arról, hogy egyszerűbb esetekben ezt a HTML-ben
+bizonyos tagekkel meg tudjuk tenni, de a nem triviális esetek
+megoldására is egyszerű módot kinál a .NET. A Controllers
+mappában minden modellnek (vagyis minden adatbázis táblának)
+létrehozunk egy Controller fájlt is. Ebben fogunk API-végpontokat
+definiálni, melyeket a frontenden JavaScript segítségével tudunk
+meghívni, és ezáltal adatot közvetíteni a felhasználó és a szerver
+között (oda-vissza). Az API-endpointok tesztelésére és leírására
+egy hasznos, szintén beépített, megoldást használhatunk, a Swaggert.
+Ezt is a Program.cs fájlban állíthatjuk be.\footnote{Szigorúan csak 
+Development módban jelenjen meg, adatvédelmi/adat hitelességi okokból.}
+
+\section{Frontend}
+Térjünk át a frontend réteg alkotóelemeire, és ezek működésére. Itt is komponensenként fogom bemutatni a felhasznált technológiákat.
+
+\subsection{Layout}
+A "Pages" mappa tartalmazza az oldalakat. A keretrendszer ugyebár úgy működik, hogy minden oldal (Razor page) egy .cshtml és egy .cs
+fájl együtteséből áll össze. A Pages mappa ezeket a párosokat tartalmazza, további kisebb mappákra bontva a funkció csoportok alapján. Az alább mellékelt ábrából\ref{fig:my_image} látható tehát, hogy például a bejelentkező felületet a következő linken tudjuk elérni: "localhost:<<port>>AccountLogin".
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[height=240px]{img/solution-explorer-pages-screenshot}
+	\caption{Pages struktúra}
+	\label{fig:pages-structure}
+\end{figure}
+
+Találhatók még ebben a mappában egyéb segédfájlok is, mint például az Error.cshtml, ami az esetleges hibák esetén jelenik meg. Kiemelendő még a Shared mappa, amiben található egy Layout.cshtml fájl is (modell nélkül). Ez, ahogy a neve is mutatja egy alap sablont biztosít az alkalmazás felületének. A weboldal egy (a képernyő baloldán lévő) főmenüből, egy kis (az oldal tetején található) menüsávból, a fő tartalmi részből áll, illetve egy footer részből áll. A footer és a menüsávok kódját tartalmazza a Layout.cshtml között a tartalomnak "kihagyott" rész: 
+\lstset{caption={Layout extension ASP.NET keretrendszerben}, label=src:csharp}
+\begin{lstlisting}[language={HTML}]
+	<div class="container-fluid">
+	@RenderBody()
+	</div>
+\end{lstlisting}
+
+A RenderBody() függvény (szintén beépített .NET metódus)
+behelyezi az adott oldal HTML kódját ebbe a div HTML elembe. Ez
+automatikusan megtörténik az összes oldal esetében amelyre
+navigál a felhasználó. Ha valami miatt éppen nem ezt a sablont akarjuk követni egy oldalunkkal (például: Bejelentkező felület), akkor az adott oldal HTML kódjába beírhatjuk hogy ne sablont kövessen:
+
+\begin{lstlisting}[language={HTML}]
+	@{
+		Layout = null; // Remove layout if you want a standalone page
+	}
+\end{lstlisting}
+
+\subsection{static}
+A "wwwroot" mappában található az összes statikus erőforrás (static resource). Itt a hagyományosan használt mappastruktúrát követtem az alkalmazás készítésekor, azaz létre lettek hozva a következő mappák:
+\begin{itemize}
+	\item "js": JavaScript kódok
+	\item "css": CSS stylesheetek
+	\item "img": Képek  
+\end{itemize}
+A frontend rész formázását Bootstrap keretrendszer felhasználásával valósítottam meg. Ezt úgy importáltam a projektbe, hogy a kész CSS/JS fileok vannak letöltve ugyanide, a wwwroot mappába, ezen kívül egy külső hivatkozás van egy betűtípusra. 
+
+\section{Adatbázis}
+Az alkalmazás adatbázisa egy localhoston futó MySQL adatbázis.
+A MySQL-t sok szempont miatt szokták kisebb alkalmazásokhoz
+használni, ezek közé tartozik például az a nem elhanyagolható
+indok, hogy teljesen ingyenes a használata. Illetve szintén
+az egyszerűségét tudnám kiemelni, és a kompatibilitását az ASP.NET keretrendszerrel. Egy darab adatbázis lett létrehozva, azon belül több tábla található, melyek természetesen kapcsolódnak egymáshoz. Az adatmodell a relációs adatbázisok normalizálási elvein alapul, és a harmadik normálformáig (3NF) került kialakításra.
+
+\subsection{Backend - Adatbázis kapcsolat}
+A backend és az adatbázis kapcsolata relatív egyszerűen megvalósítható az ASP.NET keretrendszerben.
+A NuGet package managerből az EntityFramework egyes csomagjait,
+illetve a MySQL Connector csomagot letöltve már alig van
+dolgunk. Az appsettings.json fájlban tudjuk a connection
+stringet definiálni.
+
+\lstset{caption={Adatbázis Connection String}, label=src:connstring}
+\begin{lstlisting}[language={HTML}]
+	"ConnectionStrings": {
+		"MySqlConnection": "server=localhost;port=3306;database=betterspend;user=root;password=<<password>>;"
+	}
+\end{lstlisting}
+
+majd a Program.cs fájlban tudunk ténylegesen csatlakozni:
+
+\lstset{caption={Program.cs: Adatbázis csatlakozás}, label=src:csharp}
 \begin{lstlisting}[language={[Sharp]C}]
-using System;
-namespace HelloWorld
-{
-	class Hello 
+	// Get MySQL connection string from configuration
+	string connectionString = builder.Configuration.GetConnectionString("MySqlConnection");
+	
+	// Add DB Context to the application
+	builder.Services.AddDbContext<ApplicationDbContext>(options =>
 	{
-		static void Main() 
+		options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+	});
+\end{lstlisting}
+
+A tényleges adatbázis modellje:
+
+\lstset{caption={Adatbázis modell}, label=src:dbmodel}
+\begin{lstlisting}[language={[Sharp]C}]
+	using WebApplication1.Model;
+	namespace WebApplication1.Data
+	{
+		public class ApplicationDbContext : DbContext
 		{
-			Console.WriteLine("Hello World!");
+			public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+			: base(options)
+			{
+			}
 			
-			Console.WriteLine("Press any key to exit.");
-			Console.ReadKey();
+			public DbSet<User> Users { get; set; }
+			public DbSet<Transaction> Transactions { get; set; }
+			public DbSet<Category> Categories { get; set; }
+			
 		}
 	}
-}
 \end{lstlisting}
 
-\subsection{Algoritmusok}
+Ezután már az adatbázisunk össze van kötve teljesen az alkalmazással. ASP.NET-ben közvetlenül az adatbázishoz (lekérdezésekkel, parancsokkal) nem tudunk hozzáférni. Amihez hozzá tudunk férni azok a modell fájlok (pl. Model/User). Ezeket tudjuk módosítani LINQ segítségével egyszerűen, és ez szinkronizálni fogja
+a tényleges adatbázisunkkal.
 
-Az \ref{alg:ibb}.~algoritmus egy általános elágazás és korlátozás algoritmust (\emph{Branch and Bound algorithm}) mutat be. A \ref{step:selrule}.~lépésben egy megfelelő kiválasztási szabályt kell alkalmazni.
-Példa forrása: \href{https://www.inf.u-szeged.hu/actacybernetica/}{Acta Cybernetica (ez egy hiperlink)}.
+\subsection{Migrations}
+A későbbi fejlesztések során migrációkat használhatunk az adatbázis verziókövetésére és a változtatások biztonságos, konzisztens bevezetésére. A migrációk használata Entity Framework Core segítségével történik, ahol a DbContext osztály definiálja az adatbázis szerkezetét. A módosításokat a dotnet ef migrations add paranccsal lehet rögzíteni, majd a dotnet ef database update parancs segítségével alkalmazni az adatbázisra. Ez lehetővé teszi a séma változásainak verziókövetését és biztonságos frissítését.
 
-\begin{algorithm}[H]
-\caption{A general interval B\&B algorithm}
-\label{alg:ibb}
-\textbf{\underline{Funct}} IBB($S,f$)
-\begin{algorithmic}[1] % sorszámok megjelenítése minden n. sor előtt, most n = 1
-\State Set the working list ${\cal L}_W$ := $\{S\}$ and the final list ${\cal L}_Q$ := $\{\}$
-\While{( ${\cal L}_W \neq \emptyset$ )} \label{alg:igoend}
-	\State Select an interval $X$ from ${\cal L}_W$ \label{step:selrule}\Comment{Selection rule}
-	\State Compute $lbf(X)$ \Comment{Bounding rule}
-	\If{$X$ cannot be eliminated} \Comment{Elimination rule}
-		\State Divide $X$ into $X^j,\ j=1,\dots, p$, subintervals   \Comment{Division rule}
-		\For{$j=1,\ldots,p$}
-			\If{$X^j$ satisfies the termination criterion} \Comment{Termination rule}
-				\State Store $X^j$ in ${\cal L}_W$
-			\Else
-				\State Store $X^j$ in ${\cal L}_W$
-			\EndIf
-		\EndFor
-	\EndIf
-\EndWhile
-\State \textbf{return} ${\cal L}_Q$
-\end{algorithmic}
-\end{algorithm}
+
+
+\section{Tesztek}
+---
+
+\section{UML diagramok}
+---
