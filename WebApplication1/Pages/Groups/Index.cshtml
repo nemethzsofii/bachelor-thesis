@@ -1,7 +1,9 @@
 ﻿@page
 @model WebApplication1.Pages.Groups.IndexModel
 @{
+    ViewData["Title"] = "Groups";
 }
+<input id="current-user-id" type="hidden" value="@Model.UserData.Id" />
 
 <div class="row">
     <div class="col">
@@ -14,16 +16,117 @@
                     <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;" src="img/undraw_posting_photo.svg" alt="...">
                 </div>
                 <p>
-                    Add some quality, svg illustrations to your project courtesy of <a target="_blank" rel="nofollow" href="https://undraw.co/">unDraw</a>, a
-                    constantly updated collection of beautiful svg images that you can use
-                    completely free and without attribution!
+                    You can create a new group here! Groups are great for organizing the finances of a household or spouses.
                 </p>
-                <a target="_blank" rel="nofollow" href="https://undraw.co/">
-                    Browse Illustrations on
-                    unDraw →
-                </a>
+                
+                <form method="POST" id="create-group-form" class="p-4 rounded shadow-sm bg-light" style="max-width: 600px; margin: auto;">
+                    <h3 class="mb-4 text-center text-primary">Create a New Group</h3>
+
+                    <div class="mb-3">
+                        <label for="group-name-input" class="form-label">Group Name</label>
+                        <input type="text" class="form-control" id="group-name-input" name="group-name-input" placeholder="e.g. MyHousehold" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="group-type-input" class="form-label">Group Type</label>
+                        <input type="text" class="form-control" id="group-type-input" name="group-type-input" placeholder="e.g. Household">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="group-desc-input" class="form-label">Description</label>
+                        <textarea class="form-control" id="group-desc-input" name="group-desc-input" rows="3" placeholder="e.g. Here we can organize our finances for the whole family!"></textarea>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Create Group</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Response Modal-->
+    <div class="modal fade" id="response-modal" tabindex="-1" role="dialog" aria-labelledby="response-modal"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="response-modal-text"></h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Ok</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const createdByUserId2 = parseInt(document.getElementById("current-user-id").value);
+            if(createdByUserId2 == null){
+                console.log("Error, userdata is null");
+            }else{
+                console.log(createdByUserId2);
+            }
+
+        const form = document.getElementById("create-group-form");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById("group-name-input").value;
+            const type = document.getElementById("group-type-input").value;
+            const description = document.getElementById("group-desc-input").value;
+
+            const createdByUserId = parseInt(document.getElementById("current-user-id").value);
+            if(createdByUserId == null){
+                console.log("Error, userdata is null");
+            }else{
+                const groupData = {
+                name: name,
+                type: type,
+                description: description,
+                createdByUserId: createdByUserId
+            };
+
+            try {
+                const response = await fetch("/api/Group", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(groupData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    displayModal(`Group "${result.name}" created successfully!`);
+                    //alert(`Group "${result.name}" created successfully!`);
+                    form.reset();
+                } else {
+                    const error = await response.json();
+                    displayModal(`Error: ${error.message || response.statusText}`);
+                    //alert(`Error: ${error.message || response.statusText}`);
+                }
+            } catch (err) {
+                displayModal("Something went wrong while creating the group.");
+                //alert("Something went wrong while creating the group.");
+                console.error(err);
+            }
+            }
+
+            
+        });
+        function displayModal(message){
+            document.getElementById("response-modal-text").textContent = message;
+
+            document.getElementById("response-modal").ariaHidden = false;
+
+        }
+    });
+</script>
+
 

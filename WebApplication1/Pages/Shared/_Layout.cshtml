@@ -448,37 +448,6 @@
     <script src="~/js/demo/chart-area-demo.js" asp-append-version="true"></script>
     <script src="~/js/demo/chart-pie-demo.js" asp-append-version="true"></script>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            /*
-            var fullNameLabel = document.getElementById("fullname-label");
-            if (fullNameLabel){
-                //var user = getCurrentUser();
-                //fullNameLabel.value = user.Fullname;
-            }
-
-            async function getCurrentUser() {
-            const response = await fetch('/api/User/GetCurrentUser', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                credentials: 'include'  // Include credentials (cookies or JWT token) for authentication
-            });
-
-            if (response.ok) {
-                const user = await response.json();
-                console.log('Current User:', user);
-            } else {
-                console.error('Failed to fetch current user');
-            }
-        }
-
-        });
-        */
-    </script>
-
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 
