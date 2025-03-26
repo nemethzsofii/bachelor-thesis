@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Net.Mail;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -19,6 +20,14 @@ public class UserController : ControllerBase
     public UserController(ApplicationDbContext context)
     {
         _context = context;
+    }
+    // 🔹 GET: api/User/CurrentUser (Fetch current user)
+    [HttpGet]
+    public async Task<ActionResult<User>> GetCurrentUser()
+    {
+        int currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+        var currentUser = await _context.Users.FindAsync(currentUserId);
+        return currentUser;
     }
 
     // 🔹 GET: api/User (Fetch all users)
