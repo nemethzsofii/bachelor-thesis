@@ -8,6 +8,12 @@
         public int RoleId { get; set; }
         public DateTime JoinedAt { get; set; } = DateTime.UtcNow;
 
-        public Role Role { get; set; }
+        public GroupMembership(int groupId, int userId, int roleId)
+        {
+            GroupId = groupId;
+            UserId = userId;
+            RoleId = roleId;
+            JoinedAt = DateTime.UtcNow;
+        }
     }
 }

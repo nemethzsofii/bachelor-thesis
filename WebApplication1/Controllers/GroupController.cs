@@ -4,6 +4,7 @@ using WebApplication1.Data;
 using WebApplication1.Model;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Security.Claims;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -43,8 +44,16 @@ public class GroupController : ControllerBase
         _context.Groups.Add(group);
         await _context.SaveChangesAsync();
 
+        int currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+        int ownerRoleId = 1;
+        var creatorMembership = new GroupMembership(group.Id, currentUserId, ownerRoleId);
+
+        _context.GroupMemberships.Add(creatorMembership);
+        await _context.SaveChangesAsync();
+
         return CreatedAtAction(nameof(GetGroup), new { id = group.Id }, group);
     }
+
 
     // 🔹 PUT: api/Group/{id} (Update group)
     [HttpPut("{id}")]
