@@ -87,16 +87,16 @@
                 if (response.ok) {
                     const result = await response.json();
                     var message =`Group "${result.name}" created successfully!`;
-                    displayModal(message, "Success");
+                    displayBasicModal(message, "Success");
                     form.reset();
                 } else {
                     const error = await response.json();
                     var message = `Error: ${error.message || response.statusText}`;
-                    displayModal(message, "Error");
+                    displayBasicModal(message, "Error");
                 }
             } catch (err) {
                 message = "Something went wrong while creating the group.";
-                displayModal(message, "Error");
+                displayBasicModal(message, "Error");
                 console.error(err);
             }
             }
