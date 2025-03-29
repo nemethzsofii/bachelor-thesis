@@ -3,60 +3,54 @@
 @{
 }
 
-<div id="groups-container">
-	<ul class="nav nav-tabs" id="groups-tab" role="tablist">
-		
+<div id="groups-div">
+	<ul class="nav nav-tabs" id="myTab" role="tablist">
+		<li class="nav-item" role="presentation">
+			<button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Home</button>
+		</li>
+		<li class="nav-item" role="presentation">
+			<button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Profile</button>
+		</li>
+		<li class="nav-item" role="presentation">
+			<button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Contact</button>
+		</li>
 	</ul>
-	<div class="tab-content" id="groups-tab-content">
-
+	<div class="tab-content" id="myTabContent">
+		<div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">...</div>
+		<div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">haloo</div>
+		<div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
 	</div>
 </div>
 <script>
 	document.addEventListener("DOMContentLoaded", function () {
-		var user = getCurrentUser();
-		getGroupsForCurrentUser();
+		var user = await getCurrentUser();
 		
-		async function getGroupsForCurrentUser() {
-			const response = await fetch("/api/GroupMembership/ByUser", {
-				method: "GET",
+		async function updateUser(id, updateData) {
+			const response = await fetch(`api/User/${id}`, {
+				method: "PUT",
 				 headers: {
 					"Content-Type": "application/json",
 					"Accept": "application/json"
 				},
-				credentials: "include"
+				credentials: "include",
+				body: JSON.stringify(updateData)
 			});
 
 			if (!response.ok) {
 				const errorMessage = await response.json();
-				displayBasicModal("Something went wrong!", "Error");
-				console.error(`Error: ${response.status} - ${errorMessage}`);
-			} else {
-				const result = await response.json()
-				displayGroups(result);
-			}
-		}
-
-		function displayGroups(result){
-			var containerDiv = document.getElementById("groups-container");
-			var groupsTab = document.getElementById("groups-tab");
-			var groupsContent = document.getElementById("groups-tab-content");
-
-			console.log("here");
-			if (result.lentgh == 0){
-				containerDiv.innerHTML = "No groups:(";
-			}else{
-				for(let i=0; i < result.length; i++){
-					groupsTab.innerHTML += `
-					<li class="nav-item">
-					<a class="nav-link ${i == 0 ? 'active' : ''}" id="${i}-tab" data-toggle="tab" href="#content${i}" role="tab" aria-controls="content${i}" aria-selected="true">${i+1} Tab</a>
-					</li>
-					`
-
-					groupsContent.innerHTML +=
-					`
-					<div class="tab-pane fade show ${i == 0 ? 'active' : ''}" id="content${i}" role="tabpanel" aria-labelledby="${i}-tab">$${result[i].name}</div>
-					`
+				if (errorMessage["message"] == "Invalid email format.") {
+					alert("Invalid email format!");
+				}else if(errorMessage["message"] == "Username already taken."){
+					alert("Username already taken!");
+				}else {
+					console.log(errorMessage);
+					alert("Something went wrong!");
 				}
+				console.error(`Error: ${response.status} - ${errorMessage}`);
+				return "User update failed.";
+			} else {
+				location.reload();
+				return "User updated successfully!";
 			}
 		}
 	});

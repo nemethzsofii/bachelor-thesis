@@ -22,7 +22,7 @@ public class UserController : ControllerBase
         _context = context;
     }
     // 🔹 GET: api/User/CurrentUser (Fetch current user)
-    [HttpGet("Current")]
+    [HttpGet]
     public async Task<ActionResult<User>> GetCurrentUser()
     {
         int currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
