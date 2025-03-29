@@ -20,7 +20,7 @@
 
 async function getCurrentUser() {
     try {
-        const response = await fetch("/api/User/CurrentUser", {
+        const response = await fetch("/api/User/Current", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
