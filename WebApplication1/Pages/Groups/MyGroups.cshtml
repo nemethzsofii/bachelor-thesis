@@ -51,6 +51,8 @@
 			}else{
 				for(let i=0; i < result.length; i++){
 					var group = await getGroupById(result[i].groupId);
+					//var role = await getRoleById(result[i].role);
+
 					groupsTab.innerHTML += `
 					<li class="nav-item">
 					<a class="nav-link ${i == 0 ? 'active' : ''}" id="${i}-tab" data-toggle="tab" href="#content${i}" role="tab" aria-controls="content${i}" aria-selected="true">${group.name}</a>
@@ -59,12 +61,44 @@
 
 					groupsContent.innerHTML +=
 					`
-					<div class="tab-pane fade show ${i == 0 ? 'active' : ''}" id="content${i}" role="tabpanel" aria-labelledby="${i}-tab">${group.description}</div>
+					<div class="tab-pane fade show ${i == 0 ? 'active' : ''}" id="content${i}" role="tabpanel" aria-labelledby="${i}-tab" style="padding: 15px">
+					<div class="card shadow mb-4">
+								<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+									<h6 class="m-0 font-weight-bold text-dark">${group.name}</h6>
+									<div class="dropdown no-arrow">
+										<a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+											<i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+										</a>
+										<div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink" style="">
+											<div class="dropdown-header">Action</div>
+											<a class="dropdown-item text-danger" href="#">Delete group</a>
+											<a class="dropdown-item" href="#">Another action</a>
+											<div class="dropdown-divider"></div>
+											<a class="dropdown-item" href="#">Something else here</a>
+										</div>
+									</div>
+								</div>
+								<div class="card-body">
+									<h8><b>Description:</b></h3>
+									${group.description} <br>
+									<h8><b>Role:</b></h8>
+									
+									
+									<div class="card mb-3" style="padding: 10px; margin-top: 15px">
+									  <img class="card-img-top" src="/img/undraw_finance.svg" style="height: 250px;" alt="Card image cap">
+									  <div class="card-body">
+										<h5 class="card-title">Card title</h5>
+										<p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+										<p class="card-text"><small class="text-muted">Created: ${Date(group.createdAt)}</small></p>
+									  </div>
+									</div>
+								</div>
+							</div>
+					</div>
 					`
 				}
 			}
 		}
-
 		async function getGroupById(id) {
 			const response = await fetch(`/api/Group/${id}`, {
 				method: "GET",
