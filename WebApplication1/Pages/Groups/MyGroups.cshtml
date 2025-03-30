@@ -14,7 +14,11 @@
 <script>
 	document.addEventListener("DOMContentLoaded", function () {
 		var user = getCurrentUser();
+		console.log("1");
 		getGroupsForCurrentUser();
+		console.log("2");
+		console.log("3");
+
 		
 		async function getGroupsForCurrentUser() {
 			const response = await fetch("/api/GroupMembership/ByUser", {
@@ -36,27 +40,49 @@
 			}
 		}
 
-		function displayGroups(result){
+		async function displayGroups(result){
 			var containerDiv = document.getElementById("groups-container");
 			var groupsTab = document.getElementById("groups-tab");
 			var groupsContent = document.getElementById("groups-tab-content");
 
-			console.log("here");
+			console.log(result);
 			if (result.lentgh == 0){
 				containerDiv.innerHTML = "No groups:(";
 			}else{
 				for(let i=0; i < result.length; i++){
+					var group = await getGroupById(result[i].groupId);
 					groupsTab.innerHTML += `
 					<li class="nav-item">
-					<a class="nav-link ${i == 0 ? 'active' : ''}" id="${i}-tab" data-toggle="tab" href="#content${i}" role="tab" aria-controls="content${i}" aria-selected="true">${i+1} Tab</a>
+					<a class="nav-link ${i == 0 ? 'active' : ''}" id="${i}-tab" data-toggle="tab" href="#content${i}" role="tab" aria-controls="content${i}" aria-selected="true">${group.name}</a>
 					</li>
 					`
 
 					groupsContent.innerHTML +=
 					`
-					<div class="tab-pane fade show ${i == 0 ? 'active' : ''}" id="content${i}" role="tabpanel" aria-labelledby="${i}-tab">$${result[i].name}</div>
+					<div class="tab-pane fade show ${i == 0 ? 'active' : ''}" id="content${i}" role="tabpanel" aria-labelledby="${i}-tab">${group.description}</div>
 					`
 				}
+			}
+		}
+
+		async function getGroupById(id) {
+			const response = await fetch(`/api/Group/${id}`, {
+				method: "GET",
+				 headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json"
+				},
+				credentials: "include"
+			});
+
+			if (!response.ok) {
+				const errorMessage = await response.json();
+				displayBasicModal("Something went wrong!", "Error");
+				console.error(`Error: ${response.status} - ${errorMessage}`);
+				return null;
+			} else {
+				const result = await response.json()
+				return result;
 			}
 		}
 	});
