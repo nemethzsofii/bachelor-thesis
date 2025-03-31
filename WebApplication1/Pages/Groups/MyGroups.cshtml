@@ -11,13 +11,12 @@
 
 	</div>
 </div>
+
+<script src="~/js/add-income-expense.js" asp-append-version="true"></script>
 <script>
 	document.addEventListener("DOMContentLoaded", function () {
-		var user = getCurrentUser();
-		console.log("1");
+		var userId = getCurrentUserId();
 		getGroupsForCurrentUser();
-		console.log("2");
-		console.log("3");
 
 		
 		async function getGroupsForCurrentUser() {
@@ -63,32 +62,114 @@
 					`
 					<div class="tab-pane fade show ${i == 0 ? 'active' : ''}" id="content${i}" role="tabpanel" aria-labelledby="${i}-tab" style="padding: 15px">
 					<div class="card shadow mb-4">
-								<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-									<h6 class="m-0 font-weight-bold text-dark">${group.name}</h6>
-									<div class="dropdown no-arrow">
-										<a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-											<i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-										</a>
-										<div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink" style="">
-											<div class="dropdown-header">Action</div>
-											<a class="dropdown-item text-danger" href="#">Delete group</a>
-											<a class="dropdown-item" href="#">Another action</a>
-											<div class="dropdown-divider"></div>
-											<a class="dropdown-item" href="#">Something else here</a>
-										</div>
+								<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between text-white rounded-top-4" style="background: linear-gradient(135deg, #4e73df, #1cc88a);">
+									<div style="display: block">
+										<h6 class="m-0 text-white">${group.name}</h6>
+										<h10>Description:</h10>
+										${group.description} <br>
+										<h10>Role:</h10>
 									</div>
+
+										<div class="dropdown no-arrow">
+										  <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+											 data-bs-toggle="dropdown" aria-expanded="false">
+											<i class="fas fa-ellipsis-v fa-sm fa-fw text-white-50"></i>
+										  </a>
+										  <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownMenuLink">
+											<li><h6 class="dropdown-header">Action</h6></li>
+											<li><a class="dropdown-item text-danger" href="#">Delete group</a></li>
+											<li><a class="dropdown-item" href="#">Another action</a></li>
+											<li><hr class="dropdown-divider"></li>
+											<li><a class="dropdown-item" href="#">Something else here</a></li>
+										  </ul>
+										</div>
+
 								</div>
 								<div class="card-body">
-									<h8><b>Description:</b></h3>
-									${group.description} <br>
-									<h8><b>Role:</b></h8>
-									
-									
 									<div class="card mb-3" style="padding: 10px; margin-top: 15px">
 									  <img class="card-img-top" src="/img/undraw_finance.svg" style="height: 250px;" alt="Card image cap">
 									  <div class="card-body">
-										<h5 class="card-title">Card title</h5>
-										<p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+										<h5 class="card-title">Add Expenses and income data</h5>
+											<div class="row" style="padding: 15px">
+												<div class="col">
+													<div class="input-card income-card">
+														<div class="card border-left-success shadow h-100 py-2">
+															<div class="card-body">
+																<div class="row no-gutters align-items-center">
+																	<div class="col mr-2">
+																		<div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+																			INCOME
+																		</div>
+																		<div class="h5 mb-0 font-weight-bold text-gray-400">New Income Entry</div>
+																	</div>
+																	<div class="col-auto">
+																		<i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+																	</div>
+
+																	<div class="col-auto" style="margin-left: 10px">
+																		<button class="add-btn btn btn-success" id="add-income-btn">Add</button>
+																	</div>
+																</div>
+
+																<div id="income-input-div" class="input-container" style="display: none; margin-top: 13px">
+																	<table style="padding: 3px">
+																		<tr>
+																			<td><label for="income-amount-input-field">Amount:</label></td>
+																			<td><input class="input-amount" id="income-amount-input-field" name="income-amount-input-field" type="number" /></td>
+																		</tr>
+																		<tr>
+																			<td><label for="income-desc-input-field">Description:</label></td>
+																			<td><input class="input-desc" id="income-desc-input-field" name="income-desc-input-field" type="text" /></td>
+																		</tr>
+																	</table>
+
+																	<button class="btn save-btn">SAVE</button>
+																	<button class="btn cancel-btn">CANCEL</button>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div class="col">
+													<div class="input-card expense-card">
+														<div class="card border-left-info shadow h-100 py-2">
+															<div class="card-body">
+																<div class="row no-gutters align-items-center">
+																	<div class="col mr-2">
+																		<div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+																			EXPENSE
+																		</div>
+																		<div class="h5 mb-0 font-weight-bold text-gray-400">New Expense Entry</div>
+																	</div>
+																	<div class="col-auto">
+																		<i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+																	</div>
+
+																	<div class="col-auto" style="margin-left: 10px">
+																		<button class="add-btn btn btn-info" id="add-income-btn">Add</button>
+																	</div>
+																</div>
+
+																<div id="income-input-div" class="input-container" style="display: none; margin-top: 13px">
+																	<table style="padding: 3px">
+																		<tr>
+																			<td><label for="income-amount-input-field">Amount:</label></td>
+																			<td><input class="input-amount" id="income-amount-input-field" name="income-amount-input-field" type="number" /></td>
+																		</tr>
+																		<tr>
+																			<td><label for="income-desc-input-field">Description:</label></td>
+																			<td><input class="input-desc" id="income-desc-input-field" name="income-desc-input-field" type="text" /></td>
+																		</tr>
+																	</table>
+
+																	<button class="btn save-btn">SAVE</button>
+																	<button class="btn cancel-btn">CANCEL</button>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
 										<p class="card-text"><small class="text-muted">Created: ${Date(group.createdAt)}</small></p>
 									  </div>
 									</div>
