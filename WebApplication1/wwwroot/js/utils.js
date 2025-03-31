@@ -18,6 +18,13 @@
     $(`#${modalId}`).modal('show');
 }
 
+async function getCurrentUserId() {
+    var currentUser = await getCurrentUser();
+    var currentUserId = currentUser["id"];
+
+    return currentUserId;
+}
+
 async function getCurrentUser() {
     try {
         const response = await fetch("/api/User/Current", {
@@ -32,7 +39,6 @@ async function getCurrentUser() {
         }
 
         const user = await response.json();
-        console.log("Current user:", user);
         return user;
 
     } catch (err) {
