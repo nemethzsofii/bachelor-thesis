@@ -96,8 +96,7 @@
 
 <div class="row justify-content-center">
 	<div class="col-lg-10" style="padding: 30px">
-		<div class="card border-0 rounded-4 shadow-sm">
-			<!-- Gradient Header -->
+		<div class="card border-2 rounded-4 shadow-sm" style="border-color: #36b9cc;">
 			<div class="card-header text-white rounded-top-4" style="background: linear-gradient(135deg, #4e73df, #1cc88a);">
 				<h5 class="mb-2 fw-bold text-center">Transactions Table</h5>
 				<p class="text-white-50 text-center mb-1">
@@ -108,7 +107,6 @@
 				</p>
 			</div>
 
-			<!-- Table Body -->
 			<div class="card-body bg-white rounded-bottom-4">
 				<table id="finance-table" class="table table-hover align-middle">
 					<thead class="table-primary">
@@ -137,6 +135,7 @@
 		</div>
 	</div>
 </div>
+
 
 
 <script defer>
@@ -331,14 +330,21 @@
 					}
 					for(let i = 0; i < result.length; i ++){
 						console.log("Creating element;");
-			
-						table.row.add([
-							`${result[i].type}`,
-							`${result[i].categoryId == null ? '-' : result[i].categoryId}`,
-							`${result[i].description}`,
-							`${result[i].amount}`,
-							`${result[i].date}`
-						]).draw(false);
+
+					const type = result[i].type;
+					const isExpense = type.toLowerCase() === 'expense';
+
+					const rowNode = table.row.add([
+						`${isExpense ? '⬇️' : '⬆️'} ${type}`,
+						`${result[i].categoryId}`,
+						`${result[i].description}`,
+						`${result[i].amount}`,
+						`${result[i].date}`
+					]).draw(false).node();
+
+					//$(rowNode).css('background-color', isExpense ? '#ffe5e5' : '#e5ffe5');
+					$(rowNode).css('color', isExpense ? '#a10000' : '#007f00');
+
 					}
 			}
 
