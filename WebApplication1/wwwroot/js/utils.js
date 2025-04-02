@@ -2,11 +2,10 @@
     document.getElementById(textId).textContent = message;
     document.getElementById(titleId).textContent = title;
     const header = document.getElementById(headerId);
+    const modalEl = document.getElementById(modalId);
 
-    // Remove any previous styling
     header.classList.remove("bg-success", "bg-danger", "bg-primary", "text-white");
 
-    // Apply styles based on title
     if (title.toLowerCase() === "success") {
         header.classList.add("bg-success", "text-white");
     } else if (title.toLowerCase() === "error") {
@@ -16,6 +15,13 @@
     }
 
     $(`#${modalId}`).modal('show');
+
+    // Reload page after dismissing modal
+    const onModalHidden = () => {
+        modalEl.removeEventListener('hidden.bs.modal', onModalHidden);
+        location.reload();
+    };
+    modalEl.addEventListener('hidden.bs.modal', onModalHidden);
 }
 
 async function getCurrentUserId() {
