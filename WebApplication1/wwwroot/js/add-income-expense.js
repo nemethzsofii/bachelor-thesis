@@ -52,28 +52,36 @@
             var container = event.target.closest(".input-card");
             var inputAmount = container.querySelector(".input-amount").value;
             var inputDesc = container.querySelector(".input-desc").value;
+            if (container.classList.contains(".group-card")) {
+                // case: GROUP TRANSACTION
+                var groupId = parseInt(container.querySelector(".input-group").value);
+            } else {
+                // case: PERSONAL TRANSACTION
+                var groupId = null;
+            }
 
             if (container.classList.contains("income-card")) {
                 // case: add income
                 console.log("adding income!");
-                createTransaction(currentUserId, parseInt(inputAmount), "income", null, inputDesc);
+                createTransaction(currentUserId, parseInt(inputAmount), "income", null, inputDesc, groupId);
             } else if (container.classList.contains("expense-card")) {
                 // case: add expense
                 console.log("adding expense!");
-                createTransaction(currentUserId, parseInt(inputAmount), "expense", null, inputDesc);
+                createTransaction(currentUserId, parseInt(inputAmount), "expense", null, inputDesc, groupId);
             } else {
                 console.log("invalid save class!");
             }
         }
     });
 
-    async function createTransaction(userId, amount, type, categoryId, description) {
+    async function createTransaction(userId, amount, type, categoryId, description, groupId) {
         const transactionData = {
             userId: userId,
             amount: amount,
             type: type,
             categoryId: categoryId,
-            description: description
+            description: description,
+            groupId: groupId
         };
 
         try {

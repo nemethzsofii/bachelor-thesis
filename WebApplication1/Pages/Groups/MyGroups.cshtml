@@ -92,7 +92,7 @@
 										<h5 class="card-title">Add Expenses and income data</h5>
 											<div class="row" style="padding: 15px">
 												<div class="col">
-													<div class="input-card income-card">
+													<div class="input-card income-card group-card">
 														<div class="card border-left-success shadow h-100 py-2">
 															<div class="card-body">
 																<div class="row no-gutters align-items-center">
@@ -131,7 +131,7 @@
 													</div>
 												</div>
 												<div class="col">
-													<div class="input-card expense-card">
+													<div class="input-card expense-card group-card">
 														<div class="card border-left-info shadow h-100 py-2">
 															<div class="card-body">
 																<div class="row no-gutters align-items-center">
@@ -146,19 +146,19 @@
 																	</div>
 
 																	<div class="col-auto" style="margin-left: 10px">
-																		<button class="add-btn btn btn-info" id="add-income-btn">Add</button>
+																		<button class="add-btn btn btn-info" id="add-expense-btn">Add</button>
 																	</div>
 																</div>
 
-																<div id="income-input-div" class="input-container" style="display: none; margin-top: 13px">
+																<div id="expense-input-div" class="input-container" style="display: none; margin-top: 13px">
 																	<table style="padding: 3px">
 																		<tr>
-																			<td><label for="income-amount-input-field">Amount:</label></td>
-																			<td><input class="input-amount" id="income-amount-input-field" name="income-amount-input-field" type="number" /></td>
+																			<td><label for="expense-amount-input-field">Amount:</label></td>
+																			<td><input class="input-amount" id="expense-amount-input-field" name="expense-amount-input-field" type="number" /></td>
 																		</tr>
 																		<tr>
-																			<td><label for="income-desc-input-field">Description:</label></td>
-																			<td><input class="input-desc" id="income-desc-input-field" name="income-desc-input-field" type="text" /></td>
+																			<td><label for="expense-desc-input-field">Description:</label></td>
+																			<td><input class="input-desc" id="expense-desc-input-field" name="expense-desc-input-field" type="text" /></td>
 																		</tr>
 																	</table>
 
@@ -170,6 +170,49 @@
 													</div>
 												</div>
 											</div>
+
+											<div class="row justify-content-center">
+												<div class="col-lg-10" style="padding: 30px">
+													<div class="card border-2 rounded-4 shadow-sm" style="border-color: #36b9cc;">
+														<div class="card-header text-white rounded-top-4" style="background: linear-gradient(135deg, #4e73df, #1cc88a);">
+															<h5 class="mb-2 fw-bold text-center">Transactions Table</h5>
+															<p class="text-white-50 text-center mb-1">
+																This is your central hub for tracking all your financial activity. Easily searchable and filterable, this table gives you a clear overview of your income and expenses.
+															</p>
+															<p class="text-white-50 text-center mb-0">
+																Use this table to stay in control of your money, spot patterns, and keep your budget on track.
+															</p>
+														</div>
+
+														<div class="card-body bg-white rounded-bottom-4">
+															<table id="finance-table" class="table table-hover align-middle">
+																<thead class="table-primary">
+																	<tr>
+																		<th>Type</th>
+																		<th>Category</th>
+																		<th>Description</th>
+																		<th>Amount</th>
+																		<th>Date</th>
+																	</tr>
+																</thead>
+																<tbody id="tbody">
+																	<!-- Dynamic rows go here -->
+																</tbody>
+																<tfoot class="table-light">
+																	<tr>
+																		<th>Type</th>
+																		<th>Category</th>
+																		<th>Description</th>
+																		<th>Amount</th>
+																		<th>Date</th>
+																	</tr>
+																</tfoot>
+															</table>
+														</div>
+													</div>
+												</div>
+											</div>
+
 										<p class="card-text"><small class="text-muted">Created: ${Date(group.createdAt)}</small></p>
 									  </div>
 									</div>
