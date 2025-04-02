@@ -20,5 +20,6 @@ namespace WebApplication1.Model
         public int? CategoryId { get; set; }
         public DateTime Date { get; set; } = DateTime.UtcNow;
         public string? Description { get; set; }
+        public int? GroupId { get; set; }
     }
 }

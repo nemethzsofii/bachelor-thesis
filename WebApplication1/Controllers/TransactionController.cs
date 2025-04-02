@@ -60,6 +60,7 @@ public class TransactionController : ControllerBase
         transaction.CategoryId = updatedTransaction.CategoryId;
         transaction.Date = updatedTransaction.Date;
         transaction.Description = updatedTransaction.Description;
+        transaction.GroupId = updatedTransaction.GroupId;
 
         await _context.SaveChangesAsync();
         return NoContent();
@@ -78,24 +79,60 @@ public class TransactionController : ControllerBase
         return NoContent();
     }
 
-    // 🔹 GET: api/Transaction/user/{userId} (Fetch transactions by user)
+    // 🔹 GET: api/Transaction/user/{userId} (Fetch personal transactions by user)
     [HttpGet("user/{userId}")]
     public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionsByUser(int userId)
     {
         var transactions = await _context.Transactions
-            .Where(t => t.UserId == userId)
+            .Where(t => t.UserId == userId && t.GroupId == null)
             .OrderByDescending(t => t.Id)
             .ToListAsync();
 
         return transactions;
     }
 
-    // 🔹 GET: api/Transaction/user/{userId}/type/{type} (Fetch transactions by user by type)
+    // 🔹 GET: api/Transaction/user/{userId} (Fetch group transactions by group)
+    [HttpGet("group/{groupId}")]
+    public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionsByGroup(int groupId)
+    {
+        var transactions = await _context.Transactions
+            .Where(t => t.GroupId == groupId)
+            .OrderByDescending(t => t.Id)
+            .ToListAsync();
+
+        return transactions;
+    }
+
+    // 🔹 GET: api/Transaction/user/{userId}/type/{type} (Fetch personal transactions by user by type)
     [HttpGet("user/{userId}/type/{type}")]
     public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionsByUserByType(int userId, string type)
     {
         var transactions = await _context.Transactions
-            .Where(t => t.UserId == userId && t.Type == type)
+            .Where(t => t.UserId == userId && t.Type == type && t.GroupId == null)
+            .OrderByDescending(t => t.Id)
+            .ToListAsync();
+
+        return transactions;
+    }
+
+    // 🔹 GET: api/Transaction/user/{userId}/type/{type} (Fetch transactions by user by group)
+    [HttpGet("user/{userId}/group/{groupId}")]
+    public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionsByUserByGroup(int userId, int groupId)
+    {
+        var transactions = await _context.Transactions
+            .Where(t => t.UserId == userId && t.GroupId == groupId)
+            .OrderByDescending(t => t.Id)
+            .ToListAsync();
+
+        return transactions;
+    }
+
+    // 🔹 GET: api/Transaction/user/{userId}/type/{type}/group/{groupId} (Fetch transactions by user by type by group)
+    [HttpGet("user/{userId}/type/{type}/group/{groupId}")]
+    public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionsByUserByTypeByGroup(int userId, string type, int? groupId)
+    {
+        var transactions = await _context.Transactions
+            .Where(t => t.UserId == userId && t.Type == type && t.GroupId == groupId)
             .OrderByDescending(t => t.Id)
             .ToListAsync();
 
