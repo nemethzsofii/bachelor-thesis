@@ -5,11 +5,21 @@
         var currentUserId = getCurrentUserId();
     }
     
+    document.getElementById("basic-modal-ok").addEventListener("click", function () {
+        $('#basic-modal').modal('hide');
+    });
 
     document.body.addEventListener("click", function (event) {
+
+        console.log("something clicked1");
+        // Don't ruin MODAL behaviour
+        const isModalClick = event.target.closest(".modal");
+        const isDismissBtn = event.target.closest("[data-dismiss='modal']");
+        if (isModalClick || isDismissBtn) return;
+
         console.log("something clicked");
 
-        // case: ADD INCOME
+        // case: ADD BUTTON
         if (event.target.classList.contains("add-btn")) {
             console.log("Add button clicked!");
             var container = event.target.closest(".input-card");
@@ -78,14 +88,14 @@
             if (!response.ok) {
                 throw new Error(`Error: ${response.status} - ${response.statusText}`);
             } else {
-                alert("Saved successfully!");
-                location.reload();
+                displayBasicModal("Transaction created successfully!", "success");
             }
 
             var result = await response.json();
             console.log("Transaction created successfully:", result);
         } catch (error) {
             console.error("Failed to create transaction:", error);
+            displayBasicModal("Failed to create transaction!", "error");
         }
     }
 

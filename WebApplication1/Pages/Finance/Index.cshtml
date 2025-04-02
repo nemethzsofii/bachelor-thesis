@@ -68,11 +68,11 @@
 						</div>
 
 						<div class="col-auto" style="margin-left: 10px">
-							<button class="add-btn btn btn-info" id="add-income-btn">Add</button>
+							<button class="add-btn btn btn-info" id="add-expense-btn">Add</button>
 						</div>
 					</div>
 
-					<div id="income-input-div" class="input-container" style="display: none; margin-top: 13px">
+					<div id="expense-input-div" class="input-container" style="display: none; margin-top: 13px">
 						<table style="padding: 3px">
 							<tr>
 								<td><label for="income-amount-input-field">Amount:</label></td>
@@ -225,18 +225,6 @@
 					$(rowNode).css('color', isExpense ? '#a10000' : '#007f00');
 
 					}
-			}
-
-			function formatISOTime(isoString) {
-				const date = new Date(isoString);
-				return date.toLocaleString("hu-HU", {
-					year: "numeric",
-					month: "2-digit",
-					day: "2-digit",
-					hour: "2-digit",
-					minute: "2-digit",
-					hour12: false
-				}).replace(',', ' -');
 			}
 
 
