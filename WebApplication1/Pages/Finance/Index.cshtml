@@ -75,12 +75,12 @@
 					<div id="expense-input-div" class="input-container" style="display: none; margin-top: 13px">
 						<table style="padding: 3px">
 							<tr>
-								<td><label for="income-amount-input-field">Amount:</label></td>
-								<td><input class="input-amount" id="income-amount-input-field" name="income-amount-input-field" type="number" /></td>
+								<td><label for="expense-amount-input-field">Amount:</label></td>
+								<td><input class="input-amount" id="expense-amount-input-field" name="expense-amount-input-field" type="number" /></td>
 							</tr>
 							<tr>
-								<td><label for="income-desc-input-field">Description:</label></td>
-								<td><input class="input-desc" id="income-desc-input-field" name="income-desc-input-field" type="text" /></td>
+								<td><label for="expense-desc-input-field">Description:</label></td>
+								<td><input class="input-desc" id="expense-desc-input-field" name="expense-desc-input-field" type="text" /></td>
 							</tr>
 						</table>
 
@@ -161,19 +161,26 @@
 				{ title: "Date" }
 			  ]
 			});
-			async function listAllTransactions(userId, type)
+			async function listAllTransactions(userId, type, group)
 			{
 				try {
 					var response = "";
-					if(!type){
+					if(!type && !group){
 						response = await fetch(`api/Transaction/user/${userId}`, {
 						method: "GET",
 						headers: {
 							"Content-Type": "application/json"
 						}
 					});
-					}else{
+					}else if(!group){
 						response = await fetch(`api/Transaction/user/${userId}/type/${type}`, {
+						method: "GET",
+						headers: {
+							"Content-Type": "application/json"
+						}
+					});
+					}else if(!type){
+						response = await fetch(`api/Transaction/user/${userId}/group/${group}`, {
 						method: "GET",
 						headers: {
 							"Content-Type": "application/json"

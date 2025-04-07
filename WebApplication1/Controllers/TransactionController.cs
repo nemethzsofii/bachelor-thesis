@@ -91,7 +91,7 @@ public class TransactionController : ControllerBase
         return transactions;
     }
 
-    // 🔹 GET: api/Transaction/user/{userId} (Fetch group transactions by group)
+    // 🔹 GET: api/Transaction/group/{groupId} (Fetch group transactions by group)
     [HttpGet("group/{groupId}")]
     public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionsByGroup(int groupId)
     {

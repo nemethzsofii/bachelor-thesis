@@ -3,6 +3,7 @@
         var currentUserId = parseInt(document.getElementById("current-user-id").value, 10);
     } catch (err){
         var currentUserId = getCurrentUserId();
+        console.log(currentUserId);
     }
     
     document.getElementById("basic-modal-ok").addEventListener("click", function () {
@@ -52,7 +53,7 @@
             var container = event.target.closest(".input-card");
             var inputAmount = container.querySelector(".input-amount").value;
             var inputDesc = container.querySelector(".input-desc").value;
-            if (container.classList.contains(".group-card")) {
+            if (container.classList.contains("group-card")) {
                 // case: GROUP TRANSACTION
                 var groupId = parseInt(container.querySelector(".input-group").value);
             } else {
@@ -84,8 +85,10 @@
             groupId: groupId
         };
 
+        console.log(transactionData);
+
         try {
-            const response = await fetch("api/Transaction", {
+            const response = await fetch("/api/Transaction", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

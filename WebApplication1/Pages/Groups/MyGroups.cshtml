@@ -1,7 +1,9 @@
 ﻿@page
 @model WebApplication1.Pages.Groups.MyGroupsModel
 @{
+	ViewData["Title"] = "My Groups";
 }
+<input id="current-user-id" type="hidden" value="@Model.UserData.Id" />
 
 <div id="groups-container">
 	<ul class="nav nav-tabs" id="groups-tab" role="tablist">
@@ -15,8 +17,19 @@
 <script src="~/js/add-income-expense.js" asp-append-version="true"></script>
 <script>
 	document.addEventListener("DOMContentLoaded", function () {
-		var userId = getCurrentUserId();
-		getGroupsForCurrentUser();
+		(async () => {
+		  try {
+			var userId = await getCurrentUserId();
+			var result = await getGroupsForCurrentUser();
+			await displayGroups(result);
+			for(let i=0; i < result.length; i++){
+				createHistoryTable(result[i].groupId);
+			}
+		  } catch (error) {
+			console.error('Error:', error);
+		  }
+		})();
+
 
 		
 		async function getGroupsForCurrentUser() {
@@ -34,8 +47,92 @@
 				displayBasicModal("Something went wrong!", "Error");
 				console.error(`Error: ${response.status} - ${errorMessage}`);
 			} else {
-				const result = await response.json()
-				displayGroups(result);
+				const result = await response.json();
+				return result;
+			}
+		}
+		async function displayDataTables(count){
+			for(let i = 0; i < count; i++){
+				var table = new DataTable(`#finance-table-${i}`, {
+				  columns: [
+					{ title: "Type" },
+					{ title: "Category" },
+					{ title: "Description" },
+					{
+					  title: "Amount",
+					  className: "text-end",
+					  render: function (data, type, row) {
+						const num = Number(data);
+						if (type === 'display' || type === 'filter') {
+						  return `${num.toLocaleString('hu-HU')} Ft`;
+						}
+						return num;
+					  }
+					},
+					{ title: "Date" }
+				  ]
+				});
+			}
+		}
+
+		async function createHistoryTable(groupId){
+			var table = new DataTable(`#finance-table-${groupId}`, {
+				columns: [
+				{ title: "User" },
+				{ title: "Type" },
+				{ title: "Category" },
+				{ title: "Description" },
+				{
+					title: "Amount",
+					className: "text-end",
+					render: function (data, type, row) {
+					const num = Number(data);
+					if (type === 'display' || type === 'filter') {
+						return `${num.toLocaleString('hu-HU')} Ft`;
+					}
+					return num;
+					}
+				},
+				{ title: "Date" }
+				]
+			});
+
+			var result = await listAllTransactions(null, null, groupId);
+			if(!result || result.length === 0) {
+				console.log("No transactions found for " + groupId);
+				return;
+			}
+			console.log(`#finance-table-${groupId}`);
+			console.log("Creating finance table with: ", result);
+			
+			for(let i = 0; i < result.length; i ++){
+				console.log("Creating element");
+				var fullName = "-"
+				try{
+					const user = await getUserById(result[i].userId);
+					fullName =  user.fullname;
+					console.log(fullName);
+					console.log(user);
+				}catch(error){
+					console.error("fullName not found.");
+				}
+				
+				const type = result[i].type;
+				const isExpense = type.toLowerCase() === 'expense';
+
+				console.log(table);
+				const rowNode = table.row.add([
+					`${fullName}`,
+					`${isExpense ? '⬇️' : '⬆️'} ${type}`,
+					`${result[i].categoryId}`,
+					`${result[i].description}`,
+					`${result[i].amount}`,
+					`${result[i].date}`
+				]).draw(false).node();
+				console.log("Added node");
+				//$(rowNode).css('background-color', isExpense ? '#ffe5e5' : '#e5ffe5');
+				$(rowNode).css('color', isExpense ? '#a10000' : '#007f00');
+
 			}
 		}
 
@@ -62,9 +159,9 @@
 					`
 					<div class="tab-pane fade show ${i == 0 ? 'active' : ''}" id="content${i}" role="tabpanel" aria-labelledby="${i}-tab" style="padding: 15px">
 					<div class="card shadow mb-4">
-								<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between text-white rounded-top-4" style="background: linear-gradient(135deg, #4e73df, #1cc88a);">
+								<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between rounded-top-4">
 									<div style="display: block">
-										<h6 class="m-0 text-white">${group.name}</h6>
+										<h6 class="m-0">${group.name}</h6>
 										<h10>Description:</h10>
 										${group.description} <br>
 										<h10>Role:</h10>
@@ -77,20 +174,18 @@
 										  </a>
 										  <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownMenuLink">
 											<li><h6 class="dropdown-header">Action</h6></li>
-											<li><a class="dropdown-item text-danger" href="#">Delete group</a></li>
-											<li><a class="dropdown-item" href="#">Another action</a></li>
 											<li><hr class="dropdown-divider"></li>
-											<li><a class="dropdown-item" href="#">Something else here</a></li>
+											<li><a class="dropdown-item text-danger" href="#">Delete group</a></li>
+											<li><a class="dropdown-item" href="#">Add member</a></li>
 										  </ul>
 										</div>
 
 								</div>
 								<div class="card-body">
-									<div class="card mb-3" style="padding: 10px; margin-top: 15px">
-									  <img class="card-img-top" src="/img/undraw_finance.svg" style="height: 250px;" alt="Card image cap">
+									<div class="card mb-3" style="padding: 5px; margin-top: 15px">
 									  <div class="card-body">
 										<h5 class="card-title">Add Expenses and income data</h5>
-											<div class="row" style="padding: 15px">
+											<div class="row" style="padding: 5px">
 												<div class="col">
 													<div class="input-card income-card group-card">
 														<div class="card border-left-success shadow h-100 py-2">
@@ -122,6 +217,8 @@
 																			<td><input class="input-desc" id="income-desc-input-field" name="income-desc-input-field" type="text" /></td>
 																		</tr>
 																	</table>
+
+																	<input type="hidden" name="group-id" id="group-id" class="input-group" value="${group.id}" />
 
 																	<button class="btn save-btn">SAVE</button>
 																	<button class="btn cancel-btn">CANCEL</button>
@@ -162,6 +259,8 @@
 																		</tr>
 																	</table>
 
+																	<input type="hidden" name="group-id" id="group-id" class="input-group" value="${group.id}" />
+
 																	<button class="btn save-btn">SAVE</button>
 																	<button class="btn cancel-btn">CANCEL</button>
 																</div>
@@ -172,7 +271,7 @@
 											</div>
 
 											<div class="row justify-content-center">
-												<div class="col-lg-10" style="padding: 30px">
+												<div class="col-lg-10" style="padding: 5px">
 													<div class="card border-2 rounded-4 shadow-sm" style="border-color: #36b9cc;">
 														<div class="card-header text-white rounded-top-4" style="background: linear-gradient(135deg, #4e73df, #1cc88a);">
 															<h5 class="mb-2 fw-bold text-center">Transactions Table</h5>
@@ -185,9 +284,10 @@
 														</div>
 
 														<div class="card-body bg-white rounded-bottom-4">
-															<table id="finance-table" class="table table-hover align-middle">
+															<table id="finance-table-${group.id}" class="table table-hover align-middle">
 																<thead class="table-primary">
 																	<tr>
+																		<th>User</th>
 																		<th>Type</th>
 																		<th>Category</th>
 																		<th>Description</th>
@@ -200,6 +300,7 @@
 																</tbody>
 																<tfoot class="table-light">
 																	<tr>
+																		<th>User</th>
 																		<th>Type</th>
 																		<th>Category</th>
 																		<th>Description</th>
@@ -223,6 +324,25 @@
 				}
 			}
 		}
+		async function getUserById(id){
+			const response = await fetch(`/api/User/${id}`, {
+				method: "GET",
+				 headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json"
+				},
+				credentials: "include"
+			});
+
+			if (!response.ok) {
+				const errorMessage = await response.json();
+				console.error(`Error: ${response.status} - ${errorMessage}`);
+				return null;
+			} else {
+				const result = await response.json()
+				return result;
+			}
+		}
 		async function getGroupById(id) {
 			const response = await fetch(`/api/Group/${id}`, {
 				method: "GET",
@@ -241,6 +361,53 @@
 			} else {
 				const result = await response.json()
 				return result;
+			}
+		}
+
+		async function listAllTransactions(userId, type, groupId)
+		{
+			try {
+				var response = "";
+				if(!type && !groupId && userId){
+					response = await fetch(`api/Transaction/user/${userId}`, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json"
+					}
+				});
+				}else if(!type && !userId && groupId){
+					response = await fetch(`/api/Transaction/group/${groupId}`, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json"
+					}
+				});
+				}else if(!groupId && type && userId){
+					response = await fetch(`api/Transaction/user/${userId}/type/${type}`, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json"
+					}
+				});
+				}else if(!type && userId && groupId){
+					response = await fetch(`api/Transaction/user/${userId}/group/${group}`, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json"
+					}
+				});
+				}
+
+				if (!response.ok) {
+					throw new Error(`Error: ${response.status} - ${response.statusText}`);
+				}
+
+				var result = await response.json();
+				console.log("Listed transactions successfully:", result);
+				return result;
+			} catch (error) {
+				console.error("Failed to list transactions:", error);
+				return null;
 			}
 		}
 	});
