@@ -15,8 +15,7 @@ namespace WebApplication1.Data
         public DbSet<Role> Roles { get; set; }
         public DbSet<GroupMembership> GroupMemberships { get; set; }
         public DbSet<Group> Groups { get; set; }
-        public DbSet<Notification> Notifications { get; set; }
-        public DbSet<NotificationType> NotificationTypes { get; set; }
+        public DbSet<Invite> Invites { get; set; }
 
     }
 }

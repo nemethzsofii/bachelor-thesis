@@ -18,7 +18,7 @@ namespace WebApplication1.Model
 
         [Column("category_id")]
         public int? CategoryId { get; set; }
-        public DateTime Date { get; set; } = DateTime.UtcNow;
+        public DateTime Date { get; set; } = DateTime.Now;
         public string? Description { get; set; }
         public int? GroupId { get; set; }
     }
