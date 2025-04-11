@@ -46,6 +46,17 @@ public class UserController : ControllerBase
         return user;
     }
 
+    // 🔹 GET: api/User/username/{username} (Fetch a single user by username)
+    [HttpGet("username/{username}")]
+    public async Task<ActionResult<User>> GetUserByUsername(string username)
+    {
+        var user = await _context.Users
+            .Where(u => u.Username == username)
+            .FirstOrDefaultAsync();
+        if (user == null) return NotFound();
+        return user;
+    }
+
     // 🔹 POST: api/User (Create a new user)
     [HttpPost]
     public async Task<ActionResult<User>> CreateUser([FromBody] User user)

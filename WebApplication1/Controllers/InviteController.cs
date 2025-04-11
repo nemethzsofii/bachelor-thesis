@@ -5,6 +5,7 @@ using WebApplication1.Model;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Claims;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -38,6 +39,16 @@ public class InviteController : ControllerBase
     public async Task<ActionResult<Invite>> CreateInvite([FromBody] Invite invite)
     {
         if (invite == null) return BadRequest("Invalid invite data");
+
+        bool exists = await _context.Invites.AnyAsync(i =>
+            i.ReceiverUserId == invite.ReceiverUserId &&
+            i.SenderUserId == invite.SenderUserId &&
+            i.GroupId == invite.GroupId);
+
+        if (exists)
+        {
+            return Conflict("Invite already exists between these users for this group.");
+        }
 
         _context.Invites.Add(invite);
         await _context.SaveChangesAsync();
@@ -112,4 +123,19 @@ public class InviteController : ControllerBase
 
         return invites;
     }
+
+    // 🔹 GET: api/Invite/current (Fetch invites for the current user)
+    [HttpGet("current")]
+    public async Task<ActionResult<IEnumerable<Invite>>> GetInvitesForCurrentUser()
+    {
+        int currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+        var invites = await _context.Invites
+            .Where(i => i.ReceiverUserId == currentUserId)
+            .OrderByDescending(i => i.CreatedAt)
+            .ToListAsync();
+
+        return invites;
+    }
+
 }

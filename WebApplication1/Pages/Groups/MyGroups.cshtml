@@ -7,7 +7,6 @@
 
 <div id="groups-container">
 	<ul class="nav nav-tabs" id="groups-tab" role="tablist">
-		
 	</ul>
 	<div class="tab-content" id="groups-tab-content">
 
@@ -25,12 +24,99 @@
 			for(let i=0; i < result.length; i++){
 				createHistoryTable(result[i].groupId);
 			}
+
+			document.querySelectorAll(".invite-form").forEach(form => {
+			  form.addEventListener("submit", async function (e) {
+				e.preventDefault();
+
+				const groupId = form.id.split('-')[2];
+				const userName = form.querySelector(".username-input").value;
+				const resultMessage = form.querySelector(".result-message");
+
+				const user = await getUserByUsername(userName);
+
+				if (user) {
+				  const receiverUserId = user["id"];
+				  const statusCode = await postInvite(parseInt(groupId), userId, receiverUserId);
+
+				  if (statusCode === 409) {
+					resultMessage.textContent = "Invite already exists!";
+					resultMessage.classList.add("text-danger");
+					resultMessage.classList.remove("text-success");
+				  } else if (statusCode === 400) {
+					resultMessage.textContent = "Bad request!";
+					resultMessage.classList.add("text-danger");
+					resultMessage.classList.remove("text-success");
+				  } else {
+					resultMessage.textContent = "Invite sent successfully!";
+					form.querySelector(".username-input").value = "";
+					resultMessage.classList.add("text-success");
+					resultMessage.classList.remove("text-danger");
+				  }
+				} else {
+				  resultMessage.textContent = "Username not found!";
+				  resultMessage.classList.add("text-danger");
+				  resultMessage.classList.remove("text-success");
+				}
+			  });
+			});
+
+			document.querySelectorAll(".modal").forEach(modalEl => {
+			  modalEl.addEventListener('hidden.bs.modal', function () {
+				const resultMessage = modalEl.querySelector(".result-message");
+				if (resultMessage) {
+				  resultMessage.textContent = "";
+				  resultMessage.classList.remove("text-danger", "text-success");
+				}
+
+				const input = modalEl.querySelector(".username-input");
+				if (input) {
+				  input.value = "";
+				}
+			  });
+			});
+
+
 		  } catch (error) {
 			console.error('Error:', error);
 		  }
 		})();
 
+		async function postInvite(groupId, senderUserId, receiverUserId){
+			try {
+				const response = await fetch("/api/Invite", {
+				  method: "POST",
+				  headers: { "Content-Type": "application/json" },
+				  body: JSON.stringify({
+					SenderUserId: senderUserId,
+					ReceiverUserId: receiverUserId,
+					GroupId: groupId
+				  })
+				});
 
+				if (!response.ok) {
+					const errorText = await response.text();
+					console.error(`Error ${response.status}: ${errorText}`);
+				}
+				return response.status;
+			  } catch (error){
+				  console.log(error);
+			  }
+		}
+
+		async function getUserByUsername(username){
+			try {
+				const response = await fetch(`/api/User/username/${username}`, {
+				  method: "GET",
+				  headers: { "Content-Type": "application/json" }
+				});
+				if (!response.ok) return null;
+				return response.json();
+				
+			  } catch (error){
+				  console.log(error);
+			  }
+		}
 		
 		async function getGroupsForCurrentUser() {
 			const response = await fetch("/api/GroupMembership/ByUser", {
@@ -49,29 +135,6 @@
 			} else {
 				const result = await response.json();
 				return result;
-			}
-		}
-		async function displayDataTables(count){
-			for(let i = 0; i < count; i++){
-				var table = new DataTable(`#finance-table-${i}`, {
-				  columns: [
-					{ title: "Type" },
-					{ title: "Category" },
-					{ title: "Description" },
-					{
-					  title: "Amount",
-					  className: "text-end",
-					  render: function (data, type, row) {
-						const num = Number(data);
-						if (type === 'display' || type === 'filter') {
-						  return `${num.toLocaleString('hu-HU')} Ft`;
-						}
-						return num;
-					  }
-					},
-					{ title: "Date" }
-				  ]
-				});
 			}
 		}
 
@@ -167,18 +230,51 @@
 										<h10>Role:</h10>
 									</div>
 
-										<div class="dropdown no-arrow">
-										  <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-											 data-bs-toggle="dropdown" aria-expanded="false">
-											<i class="fas fa-ellipsis-v fa-sm fa-fw text-white-50"></i>
+									<div class="dropdown no-arrow">
+									  <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+										 data-bs-toggle="dropdown" aria-expanded="false">
+										<i class="fas fa-ellipsis-v"></i>
+									  </a>
+
+									  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink">
+										<li><h6 class="dropdown-header">Action</h6></li>
+										<li>
+										  <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#inviteModal-${group.id}">
+											Add member
 										  </a>
-										  <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownMenuLink">
-											<li><h6 class="dropdown-header">Action</h6></li>
-											<li><hr class="dropdown-divider"></li>
-											<li><a class="dropdown-item text-danger" href="#">Delete group</a></li>
-											<li><a class="dropdown-item" href="#">Add member</a></li>
-										  </ul>
+										</li>
+										<li><hr class="dropdown-divider"></li>
+										<li><a class="dropdown-item text-danger" href="#">Delete group</a></li>
+									  </ul>
+									</div>
+
+
+										<div class="modal fade" id="inviteModal-${group.id}" tabindex="-1" aria-labelledby="inviteModalLabel" aria-hidden="true">
+											<div class="modal-dialog">
+											<div class="modal-content rounded-4 shadow">
+												<div class="modal-header">
+												<h5 class="modal-title" id="inviteModalLabel">Send Invite</h5>
+												<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+												</div>
+
+												<div class="modal-body">
+												<form id="invite-form-${group.id}" class="invite-form">
+													<div class="mb-3">
+													<h6 class="result-message"></h6>
+													<label for="username-input" class="form-label">Username</label>
+													<input type="text" class="form-control username-input" id="username-input" name="username-input" required>
+													</div>
+												</form>
+												</div>
+
+												<div class="modal-footer">
+												<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+												<button type="submit" form="invite-form-${group.id}" class="btn btn-primary">Send Invite</button>
+												</div>
+											</div>
+											</div>
 										</div>
+
 
 								</div>
 								<div class="card-body">
@@ -406,4 +502,5 @@
 			}
 		}
 	});
+
 </script>
