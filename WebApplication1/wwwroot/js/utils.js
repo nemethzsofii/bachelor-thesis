@@ -1,4 +1,11 @@
-﻿function displayBasicModal(message, title, modalId = "basic-modal", textId = "basic-modal-text", titleId = "basic-modal-title", headerId = "basic-modal-header"){
+﻿function displayBasicModal(
+    message,
+    title,
+    modalId = "basic-modal",
+    textId = "basic-modal-text",
+    titleId = "basic-modal-title",
+    headerId = "basic-modal-header"
+) {
     document.getElementById(textId).textContent = message;
     document.getElementById(titleId).textContent = title;
     const header = document.getElementById(headerId);
@@ -6,9 +13,10 @@
 
     header.classList.remove("bg-success", "bg-danger", "bg-primary", "text-white");
 
-    if (title.toLowerCase() === "success") {
+    const lowerTitle = title.toLowerCase();
+    if (lowerTitle === "success") {
         header.classList.add("bg-success", "text-white");
-    } else if (title.toLowerCase() === "error") {
+    } else if (lowerTitle === "error") {
         header.classList.add("bg-danger", "text-white");
     } else {
         header.classList.add("bg-primary", "text-white");
@@ -16,13 +24,12 @@
 
     $(`#${modalId}`).modal('show');
 
-    // Reload page after dismissing modal
-    const onModalHidden = () => {
-        modalEl.removeEventListener('hidden.bs.modal', onModalHidden);
+    $(`#${modalId}`).on('hidden.bs.modal', function onModalHidden() {
+        $(this).off('hidden.bs.modal', onModalHidden);
         location.reload();
-    };
-    modalEl.addEventListener('hidden.bs.modal', onModalHidden);
+    });
 }
+
 
 async function getCurrentUserId() {
     var currentUser = await getCurrentUser();

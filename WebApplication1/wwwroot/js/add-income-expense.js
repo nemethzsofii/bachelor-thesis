@@ -18,6 +18,8 @@
         const isDismissBtn = event.target.closest("[data-dismiss='modal']");
         if (isModalClick || isDismissBtn) return;
 
+        
+
         console.log("something clicked");
 
         // case: ADD BUTTON
