@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Claims;
+using System.Text.Json;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -75,6 +76,36 @@ public class InviteController : ControllerBase
         return NoContent();
     }
 
+    // 🔹 PATCH: api/Invite/{id}
+    [HttpPatch("{id}")]
+    public async Task<ActionResult<Invite>> PatchInvite(int id, [FromBody] JsonElement patchData)
+    {
+        var invite = await _context.Invites.FindAsync(id);
+        if (invite == null) return NotFound();
+
+        foreach (var prop in patchData.EnumerateObject())
+        {
+            switch (prop.Name.ToLower())
+            {
+                case "senderuserid":
+                    invite.SenderUserId = prop.Value.GetInt32();
+                    break;
+                case "receiveruserid":
+                    invite.ReceiverUserId = prop.Value.GetInt32();
+                    break;
+                case "accepted":
+                    invite.Accepted = prop.Value.GetByte();
+                    break;
+                case "createdat":
+                    invite.CreatedAt = prop.Value.GetDateTime();
+                    break;
+            }
+        }
+
+        await _context.SaveChangesAsync();
+        return invite;
+    }
+
     // 🔹 DELETE: api/Invite/{id} (Delete an invite)
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteInvite(int id)
@@ -131,7 +162,7 @@ public class InviteController : ControllerBase
         int currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
         var invites = await _context.Invites
-            .Where(i => i.ReceiverUserId == currentUserId)
+            .Where(i => i.ReceiverUserId == currentUserId && i.Accepted == 0)
             .OrderByDescending(i => i.CreatedAt)
             .ToListAsync();
 

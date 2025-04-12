@@ -376,23 +376,11 @@
                 empty.className = "dropdown-item text-center text-gray-500 small";
                 empty.textContent = "No invites found.";
                 container.appendChild(empty);
+                document.getElementById("msg-badge-counter").textContent = 0;
                 return;
             }else{
                 document.getElementById("msg-badge-counter").textContent = invites.length;
             }
-
-            document.addEventListener("click", function (e) {
-                if (e.target.classList.contains("accept-btn")) {
-                    e.preventDefault();
-                    const id = e.target.getAttribute("data-id");
-                    acceptGroupInvite(id);
-                } else if (e.target.classList.contains("decline-btn")) {
-                    e.preventDefault();
-                    const id = e.target.getAttribute("data-id");
-                    declineGroupInvite(id);
-                }
-            });
-
 
             invites.forEach(invite => {
                 const a = document.createElement("a");
@@ -427,8 +415,63 @@
                 container.appendChild(a);
             });
 
+            document.addEventListener("click", async function (e) {
+                if (e.target.classList.contains("accept-btn")) {
+                    e.preventDefault();
+                    const id = e.target.getAttribute("data-id");
+                    const response = await acceptGroupInvite(id);
+                    const invite = await response.json();
+                    console.log("éééééééééé");
+                    console.log(invite);
+                    await addGroupMembership(invite.groupId, invite.receiverUserId);
+                } else if (e.target.classList.contains("decline-btn")) {
+                    e.preventDefault();
+                    const id = e.target.getAttribute("data-id");
+                    declineGroupInvite(id);
+                }
+            });
+            
+            async function addGroupMembership(groupId, userId){
+                console.log("####");
+                console.log(groupId, userId);
+                const response = await fetch(`/api/GroupMembership`,{
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        'GroupId': groupId,
+                        'UserId': userId,
+                        'RoleId': 2
+                    })
+
+                })
+
+                if(!response.ok){
+                    displayBasicModal("Group membership could not be created!", "error");
+                }else{
+                    displayBasicModal("Successfully added to the group!", "success");
+                }
+            }
             async function acceptGroupInvite(inviteId){
-                displayBasicModal("Invite accepted!", "success");
+                const response = await fetch(`/api/Invite/${inviteId}`, {
+                    method: 'PATCH',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        'accepted': 1
+                  })
+                })
+                if(!response.ok){
+                    displayBasicModal("An error occured! Invite couldn't be accepted!", "error");
+                }else{
+                     displayBasicModal("Invite accepted!", "success");
+                }
+                return response;
+
             }
             async function declineGroupInvite(inviteId){
                 displayBasicModal("Invite declined!", "error");
