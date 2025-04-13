@@ -138,11 +138,25 @@ A "wwwroot" mappában található az összes statikus erőforrás (static resour
 A frontend rész formázását Bootstrap keretrendszer felhasználásával valósítottam meg. Ezt úgy importáltam a projektbe, hogy a kész CSS/JS fileok vannak letöltve ugyanide, a wwwroot mappába, ezen kívül egy külső hivatkozás van egy betűtípusra. 
 
 \section{Adatbázis}
+Az alkalmazás működésének egyik alapvető pillére az adatbázis, amely a rendszerben tárolt információk strukturált kezelését, hosszú távú perzisztenciáját és elérhetőségét biztosítja. Az adatbázis szerkezete úgy került kialakításra, hogy az hatékonyan támogassa az alkalmazás funkcionális igényeit, miközben jól skálázható és könnyen karbantartható maradjon.
+
+Az adatbázis relációs modellre épül, és az adatok külön táblákban kerülnek tárolásra, melyeket kulcsok és kapcsolat típusok kötnek össze.
+
+\subsection{Szerkezet}
 Az alkalmazás adatbázisa egy localhoston futó MySQL adatbázis.
 A MySQL-t sok szempont miatt szokták kisebb alkalmazásokhoz
 használni, ezek közé tartozik például az a nem elhanyagolható
 indok, hogy teljesen ingyenes a használata. Illetve szintén
 az egyszerűségét tudnám kiemelni, és a kompatibilitását az ASP.NET keretrendszerrel. Egy darab adatbázis lett létrehozva, azon belül több tábla található, melyek természetesen kapcsolódnak egymáshoz. Az adatmodell a relációs adatbázisok normalizálási elvein alapul, és a harmadik normálformáig (3NF) került kialakításra.
+A szerkezetet és a logikai kapcsolatokat az egyes táblák között a \ref{fig:database-structure}. ábra szemlélteti.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[height=300px]{img/db-model}
+	\caption{Adatbázis struktúra}
+	\label{fig:database-structure}
+\end{figure}
+
 
 \subsection{Backend - Adatbázis kapcsolat}
 A backend és az adatbázis kapcsolata relatív egyszerűen megvalósítható az ASP.NET keretrendszerben.
