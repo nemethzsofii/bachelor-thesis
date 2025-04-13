@@ -9,7 +9,7 @@ namespace WebApplication1.Model
         public string Type { get; set; }
         public string Description { get; set; }
         public int CreatedByUserId { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; }
 
         public IList<GroupMembership> GroupMemberships { get; } = new List<GroupMembership>();
     }

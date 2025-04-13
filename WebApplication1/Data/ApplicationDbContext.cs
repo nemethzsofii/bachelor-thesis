@@ -17,5 +17,14 @@ namespace WebApplication1.Data
         public DbSet<Group> Groups { get; set; }
         public DbSet<Invite> Invites { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Group>()
+                .Property(g => g.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+        }
+
     }
 }
