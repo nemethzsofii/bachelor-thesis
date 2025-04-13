@@ -3,7 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 using WebApplication1.Data;
 using WebApplication1.Model;
-
+using QuestPDF;
+using QuestPDF.Infrastructure;
 
 namespace WebApplication1
 {
@@ -11,6 +12,8 @@ namespace WebApplication1
     {
         public static void Main(string[] args)
         {
+            QuestPDF.Settings.License = LicenseType.Community;
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Get MySQL connection string from configuration
