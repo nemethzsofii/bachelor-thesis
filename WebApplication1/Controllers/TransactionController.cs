@@ -5,6 +5,8 @@ using WebApplication1.Model;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication1.Utils;
+using System.Security.Claims;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -149,4 +151,23 @@ public class TransactionController : ControllerBase
 
         return transactions;
     }
+
+    [HttpGet("DownloadReportForCurrent")]
+    public async Task<IActionResult> DownloadReport()
+    {
+        int currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+        var user = await _context.Users.FindAsync(currentUserId);
+        if (user == null)
+            return NotFound("User not found");
+
+        var transactions = await _context.Transactions
+            .Where(t => t.UserId == currentUserId)
+            .ToListAsync();
+
+        var pdf = new PdfGenerator(user.Fullname, transactions);
+        var pdfBytes = pdf.GeneratePdf();
+
+        return File(pdfBytes, "application/pdf", $"report_{user.Fullname}_{DateTime.Now:yyyyMMdd}.pdf");
+    }
+
 }
