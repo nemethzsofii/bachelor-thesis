@@ -1,4 +1,6 @@
-﻿namespace WebApplication1.Model
+﻿using Microsoft.Extensions.Hosting;
+
+namespace WebApplication1.Model
 {
     public class Group
     {
@@ -8,5 +10,7 @@
         public string Description { get; set; }
         public int CreatedByUserId { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        public IList<GroupMembership> GroupMemberships { get; } = new List<GroupMembership>();
     }
 }
