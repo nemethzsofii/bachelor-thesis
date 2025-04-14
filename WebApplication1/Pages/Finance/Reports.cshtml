@@ -7,8 +7,11 @@
 <input id="current-user-id" type="hidden" value="@Model.UserData.Id" />
 
 <div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary" id="finances-curr-month-area-chart-title"></h6>
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary" id="finances-curr-month-area-chart-title">Monthly Finances</h6>
+        <button type="button" id="download-button" class="btn btn-primary btn-sm">
+            <i class="fas fa-file-download me-1"></i> Download Detailed Report
+        </button>
     </div>
     <div class="card-body">
         <div class="chart-area">
@@ -19,6 +22,50 @@
 </div>
 
 <script>
+    document.addEventListener("DOMContentLoaded", async function(){
+        updateChart();
+        document.getElementById('download-button')
+            .addEventListener('click', async function () {
+              const response = await fetch('/api/Transaction/DownloadReportForCurrent', {
+                method: "GET",
+                headers: {
+                  "Accept": "application/pdf"
+                },
+                credentials: "include"
+              });
+
+              if (!response.ok) {
+                console.error("Error downloading report.", response);
+                displayBasicModal("Download failed!", "error");
+                return;
+              }
+
+              let filename = "report.pdf";
+
+              const disposition = response.headers.get('Content-Disposition');
+              if (disposition) {
+                const filenameMatch = disposition.match(/filename\*=UTF-8''(.+)/);
+                if (filenameMatch && filenameMatch.length > 1) {
+                  filename = decodeURIComponent(filenameMatch[1]);
+                }
+              }
+
+              const blob = await response.blob();
+              const url = window.URL.createObjectURL(blob);
+
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = filename;
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+
+              window.URL.revokeObjectURL(url);
+              console.log(`Downloading: ${filename}`);
+            });
+
+
+    });
         // Function to fetch transactions for the current month
     async function fetchTransactions(userId, type) {
         try {
@@ -200,8 +247,5 @@
             }
         });
     }
-
-    // Run function on page load
-    document.addEventListener("DOMContentLoaded", updateChart);
 
 </script>
