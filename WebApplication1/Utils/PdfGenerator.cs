@@ -35,8 +35,14 @@ namespace WebApplication1.Utils
                 .OrderBy(t => t.Date)
                 .ToList();
 
-            var totalIncome = lastMonthTransactions.Where(t => t.Amount > 0).Sum(t => t.Amount);
-            var totalExpense = lastMonthTransactions.Where(t => t.Amount < 0).Sum(t => t.Amount * -1);
+            var totalIncome = lastMonthTransactions
+                                .Where(t => t.Type == "income")
+                                .Sum(t => t.Amount);
+
+            var totalExpense = lastMonthTransactions
+                                .Where(t => t.Type == "expense")
+                                .Sum(t => t.Amount);
+
             var net = totalIncome - totalExpense;
             var avgPerDay = totalExpense / DateTime.DaysInMonth(lastMonthStart.Year, lastMonthStart.Month);
 
@@ -48,8 +54,8 @@ namespace WebApplication1.Utils
 
                 page.Content().Column(column =>
                 {
-                    column.Item().Text($"📄 Group Financial Report for {_fullName}").Bold().FontSize(20).FontColor(Colors.Blue.Darken2);
-                    column.Item().Text($"📅 Period: {lastMonthStart:yyyy.MM.dd} – {lastMonthEnd:yyyy.MM.dd}").Italic().FontSize(12).FontColor(Colors.Grey.Darken1);
+                    column.Item().Text($"Financial Report for {_fullName}").Bold().FontSize(20).FontColor(Colors.Blue.Darken2);
+                    column.Item().Text($"Period: {lastMonthStart:yyyy.MM.dd} – {lastMonthEnd:yyyy.MM.dd}").Italic().FontSize(12).FontColor(Colors.Grey.Darken1);
                     column.Item().PaddingVertical(10).LineHorizontal(1);
 
                     column.Item().Text("📊 Key Statistics").Bold().FontSize(16).FontColor(Colors.Indigo.Medium);
@@ -57,13 +63,13 @@ namespace WebApplication1.Utils
                     {
                         row.RelativeItem().Column(stats =>
                         {
-                            stats.Item().Text($"💰 Total Income: {totalIncome:N0} Ft").FontColor(Colors.Green.Darken2);
-                            stats.Item().Text($"💸 Total Expenses: {totalExpense:N0} Ft").FontColor(Colors.Red.Darken2);
-                            stats.Item().Text($"💼 Net Total: {net:N0} Ft").FontColor(net >= 0 ? Colors.Green.Darken1 : Colors.Red.Darken1);
-                            stats.Item().Text($"📅 Avg. Spending / Day: {avgPerDay:N0} Ft").FontColor(Colors.BlueGrey.Darken2);
+                            stats.Item().Text($"- Total Income: {totalIncome:N0} Ft").FontColor(Colors.Green.Darken2);
+                            stats.Item().Text($"- Total Expense: {totalExpense:N0} Ft").FontColor(Colors.Red.Darken2);
+                            stats.Item().Text($"- Net Total: {net:N0} Ft").FontColor(net >= 0 ? Colors.Green.Darken1 : Colors.Red.Darken1);
+                            stats.Item().Text($"- Average Daily Spending: {avgPerDay:N0} Ft").FontColor(Colors.BlueGrey.Darken2);
                         });
 
-                        //row.ConstantItem(200).Image(GenerateChartImage(totalIncome, totalExpense));
+                        row.ConstantItem(200).Image(GenerateChartImage(totalIncome, totalExpense));
                     });
 
                     column.Item().PaddingVertical(10).LineHorizontal(1);
@@ -71,7 +77,7 @@ namespace WebApplication1.Utils
 
                     if (lastMonthTransactions.Count == 0)
                     {
-                        column.Item().Text("No transactions recorded in the selected period.").Italic().FontColor(Colors.Grey.Medium);
+                        column.Item().Text("No transactions in the selected period.").Italic().FontColor(Colors.Grey.Medium);
                     }
                     else
                     {
@@ -100,21 +106,20 @@ namespace WebApplication1.Utils
                                 table.Cell().Text(t.Date.ToString("yyyy-MM-dd"));
                                 table.Cell().Text(t.Type);
                                 table.Cell().Text(t.CategoryId?.ToString() ?? "-");
-                                table.Cell().Text($"{t.Amount:N0} Ft").AlignRight().FontColor(t.Amount < 0 ? Colors.Red.Darken2 : Colors.Green.Darken2);
+                                table.Cell().Text($"{t.Amount:N0} Ft").AlignRight().FontColor(t.Type == "expense" ? Colors.Red.Darken2 : Colors.Green.Darken2);
                                 table.Cell().Text(t.Description ?? "-");
                             }
                         });
                     }
 
                     column.Item().PaddingVertical(10).LineHorizontal(1);
-                    column.Item().Text("💡 \"Do not save what is left after spending, but spend what is left after saving.\" – Warren Buffett")
+                    column.Item().Text("\"Do not save what is left after spending, but spend what is left after saving.\" – Warren Buffett")
                         .Italic().FontSize(12).FontColor(Colors.Grey.Darken2).AlignCenter();
                 });
             });
         }
 
         
-    /*
     private byte[] GenerateChartImage(decimal income, decimal expense)
     {
         var width = 300;
@@ -137,15 +142,12 @@ namespace WebApplication1.Utils
 
         var rect = new SKRect(50, 50, 250, 250);
 
-        // Income (Green)
         paint.Color = SKColors.Green;
         canvas.DrawArc(rect, 0, angleIncome, true, paint);
 
-        // Expense (Red)
         paint.Color = SKColors.Red;
         canvas.DrawArc(rect, angleIncome, angleExpense, true, paint);
 
-        // Labels
         paint.Color = SKColors.Black;
         paint.TextSize = 16;
         canvas.DrawText($"Income", 100, 270, paint);
@@ -155,6 +157,5 @@ namespace WebApplication1.Utils
         using var data = image.Encode(SKEncodedImageFormat.Png, 100);
         return data.ToArray();
     }
-    */
     }
 }
