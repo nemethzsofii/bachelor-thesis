@@ -43,7 +43,9 @@
 								<td><label for="income-desc-input-field">Description:</label></td>
 								<td><input class="input-desc" id="income-desc-input-field" name="income-desc-input-field" type="text" /></td>
 							</tr>
+								
 						</table>
+						<div class="categoryIncomeDropdownContainer"></div>
 
 						<button class="btn save-btn">SAVE</button>
 						<button class="btn cancel-btn">CANCEL</button>
@@ -83,6 +85,7 @@
 								<td><input class="input-desc" id="expense-desc-input-field" name="expense-desc-input-field" type="text" /></td>
 							</tr>
 						</table>
+						<div class="categoryExpenseDropdownContainer"></div>
 
 						<button class="btn save-btn">SAVE</button>
 						<button class="btn cancel-btn">CANCEL</button>
@@ -138,8 +141,11 @@
 
 
 <script src="~/js/add-income-expense.js" asp-append-version="true"></script>
+<script src="~/js/utils.js" asp-append-version="true"></script>
 <script defer>
 	document.addEventListener("DOMContentLoaded", function () {
+			populateCategoryDropdown(1, "categoryIncomeDropdownContainer");
+			populateCategoryDropdown(2, "categoryExpenseDropdownContainer");
 			var currentUserId = parseInt(document.getElementById("current-user-id").value, 10);
 
 			var table = new DataTable('#finance-table', {
@@ -219,10 +225,18 @@
 
 					const typeId = result[i].typeId;
 					const isExpense = typeId == 2;
-
+					
+					if(result[i].categoryId != null){
+						var res = await getCategoryById(result[i].categoryId);
+						console.log(res);
+						var categoryName = res.name.toLowerCase();
+					}else{
+						var categoryName = "-";
+					}
+					
 					const rowNode = table.row.add([
 						`${isExpense ? '⬇️ expense' : '⬆️ income'}`,
-						`${result[i].categoryId}`,
+						`${categoryName}`,
 						`${result[i].description}`,
 						`${result[i].amount}`,
 						`${result[i].date}`

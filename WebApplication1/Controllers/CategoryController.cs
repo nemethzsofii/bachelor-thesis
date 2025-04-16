@@ -27,12 +27,22 @@ namespace WebApplication1.Controllers
             return await _context.Categories.ToListAsync();
         }
 
+        // 🔹 GET: api/Category/{id}
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Category>> GetCategory(int id)
+        {
+            var category = await _context.Categories.FindAsync(id);
+            if (category == null) return NotFound();
+            return category;
+        }
+
         // 🔹 GET: api/Category/typeId
         [HttpGet("typeId/{typeId}")]
         public async Task<ActionResult<IEnumerable<Category>>> GetAllFromType(int typeId)
         {
             return await _context.Categories
                 .Where(c => c.TypeId == typeId)
+                .OrderBy(c => c.TypeId)
                 .ToListAsync();
         }
 

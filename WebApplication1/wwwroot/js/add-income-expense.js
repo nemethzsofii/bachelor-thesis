@@ -55,6 +55,8 @@
             var container = event.target.closest(".input-card");
             var inputAmount = container.querySelector(".input-amount").value;
             var inputDesc = container.querySelector(".input-desc").value;
+            var categoryId = parseInt(container.querySelector(".input-category").value);
+            console.log(categoryId);
             if (container.classList.contains("group-card")) {
                 // case: GROUP TRANSACTION
                 var groupId = parseInt(container.querySelector(".input-group").value);
@@ -66,11 +68,11 @@
             if (container.classList.contains("income-card")) {
                 // case: add income
                 console.log("adding income!");
-                createTransaction(currentUserId, parseInt(inputAmount), 1, null, inputDesc, groupId);
+                createTransaction(currentUserId, parseInt(inputAmount), 1, categoryId, inputDesc, groupId);
             } else if (container.classList.contains("expense-card")) {
                 // case: add expense
                 console.log("adding expense!");
-                createTransaction(currentUserId, parseInt(inputAmount), 2, null, inputDesc, groupId);
+                createTransaction(currentUserId, parseInt(inputAmount), 2, categoryId, inputDesc, groupId);
             } else {
                 console.log("invalid save class!");
             }
