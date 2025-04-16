@@ -14,7 +14,7 @@ namespace WebApplication1.Model
         public decimal Amount { get; set; }
 
         [Column("type")]
-        public string Type { get; set; }
+        public int TypeId { get; set; }
 
         [Column("category_id")]
         public int? CategoryId { get; set; }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,11 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250416191927_RenameTypeToTypeId")]
+    partial class RenameTypeToTypeId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -215,8 +218,9 @@ namespace WebApplication1.Migrations
                     b.Property<int?>("GroupId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TypeId")
-                        .HasColumnType("int")
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("longtext")
                         .HasColumnName("type");
 
                     b.Property<int>("UserId")
@@ -226,23 +230,6 @@ namespace WebApplication1.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Transactions");
-                });
-
-            modelBuilder.Entity("WebApplication1.Model.TransactionType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TransactionTypes");
                 });
 
             modelBuilder.Entity("WebApplication1.Model.User", b =>

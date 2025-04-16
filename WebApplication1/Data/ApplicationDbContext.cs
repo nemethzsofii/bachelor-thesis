@@ -17,6 +17,7 @@ namespace WebApplication1.Data
         public DbSet<Group> Groups { get; set; }
         public DbSet<Invite> Invites { get; set; }
         public DbSet<Saving> Savings { get; set; }
+        public DbSet<TransactionType> TransactionTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

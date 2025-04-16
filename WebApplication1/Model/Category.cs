@@ -12,7 +12,7 @@ namespace WebApplication1.Model
         public string Name { get; set; }
 
         [Required]
-        public string Type { get; set; }
+        public int TypeId { get; set; }
 
     }
 }
