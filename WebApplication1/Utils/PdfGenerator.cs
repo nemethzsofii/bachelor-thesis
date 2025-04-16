@@ -36,11 +36,11 @@ namespace WebApplication1.Utils
                 .ToList();
 
             var totalIncome = lastMonthTransactions
-                                .Where(t => t.Type == "income")
+                                .Where(t => t.TypeId == 1)
                                 .Sum(t => t.Amount);
 
             var totalExpense = lastMonthTransactions
-                                .Where(t => t.Type == "expense")
+                                .Where(t => t.TypeId == 2)
                                 .Sum(t => t.Amount);
 
             var net = totalIncome - totalExpense;
@@ -104,9 +104,9 @@ namespace WebApplication1.Utils
                             foreach (var t in lastMonthTransactions)
                             {
                                 table.Cell().Text(t.Date.ToString("yyyy-MM-dd"));
-                                table.Cell().Text(t.Type);
+                                table.Cell().Text(t.TypeId);
                                 table.Cell().Text(t.CategoryId?.ToString() ?? "-");
-                                table.Cell().Text($"{t.Amount:N0} Ft").AlignRight().FontColor(t.Type == "expense" ? Colors.Red.Darken2 : Colors.Green.Darken2);
+                                table.Cell().Text($"{t.Amount:N0} Ft").AlignRight().FontColor(t.TypeId == 2 ? Colors.Red.Darken2 : Colors.Green.Darken2);
                                 table.Cell().Text(t.Description ?? "-");
                             }
                         });
