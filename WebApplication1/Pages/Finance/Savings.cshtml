@@ -3,4 +3,65 @@
 @{
 
 }
-Savings
+
+<div class="card shadow mb-4">
+	<div class="card-header py-3 d-flex justify-content-between align-items-center">
+		<div>
+			<h4 class="m-0 font-weight-bold text-primary">Savings Page</h4>
+			<h6 class="m-0 font-weight-bold text-primary">On this page you can organize your savings. Either saving for a specific goal, or just trying to have backup money, you can organize everything here!</h6>
+		</div>
+		<button type="button" id="add-button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#savingsModal">
+			Add new saving goal
+		</button>
+
+		
+	</div>
+    <div class="card-body savings-cards-container" style="display: flex; padding: 10px;"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="savingsModal" tabindex="-1" role="dialog" aria-labelledby="savingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content rounded-3 shadow">
+
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="savingsModalLabel">Create a Savings Goal</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form id="savings-form" action="/api/Savings" method="POST">
+                    <div class="form-group">
+                        <label for="Title">Title</label>
+                        <input type="text" class="form-control" id="Title" name="Title" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="Description">Description</label>
+                        <input type="text" class="form-control" id="Description" name="Description" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="GoalAmount">Goal Amount (Optional)</label>
+                        <input type="number" class="form-control" id="GoalAmount" name="GoalAmount" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Deadline">Deadline (Optional)</label>
+                        <input type="date" class="form-control" id="Deadline" name="Deadline" />
+                    </div>
+                    <button type="submit" class="btn btn-success">Save</button>
+                </form>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script src="~/js/utils.js" asp-append-version="true"></script>
+<script src="~/js/savings.js" asp-append-version="true"></script>
