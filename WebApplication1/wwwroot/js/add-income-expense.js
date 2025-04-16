@@ -66,22 +66,22 @@
             if (container.classList.contains("income-card")) {
                 // case: add income
                 console.log("adding income!");
-                createTransaction(currentUserId, parseInt(inputAmount), "income", null, inputDesc, groupId);
+                createTransaction(currentUserId, parseInt(inputAmount), 1, null, inputDesc, groupId);
             } else if (container.classList.contains("expense-card")) {
                 // case: add expense
                 console.log("adding expense!");
-                createTransaction(currentUserId, parseInt(inputAmount), "expense", null, inputDesc, groupId);
+                createTransaction(currentUserId, parseInt(inputAmount), 2, null, inputDesc, groupId);
             } else {
                 console.log("invalid save class!");
             }
         }
     });
 
-    async function createTransaction(userId, amount, type, categoryId, description, groupId) {
+    async function createTransaction(userId, amount, typeId, categoryId, description, groupId) {
         const transactionData = {
             userId: userId,
             amount: amount,
-            type: type,
+            typeId: typeId,
             categoryId: categoryId,
             description: description,
             groupId: groupId

@@ -212,13 +212,13 @@
 					console.error("fullName not found.");
 				}
 				
-				const type = result[i].type;
-				const isExpense = type.toLowerCase() === 'expense';
+				const typeId = result[i].typeId;
+				const isExpense = typeId == 2;
 
 				console.log(table);
 				const rowNode = table.row.add([
 					`${fullName}`,
-					`${isExpense ? '⬇️' : '⬆️'} ${type}`,
+					`${isExpense ? '⬇️ expense' : '⬆️ income'}`,
 					`${result[i].categoryId}`,
 					`${result[i].description}`,
 					`${result[i].amount}`,
@@ -257,6 +257,8 @@
 				for(let i=0; i < result.length; i++){
 					var group = await getGroupById(result[i].groupId);
 					var role = await getRoleById(result[i].roleId);
+
+					var savingsResult = await getGroupSavings(result[i].groupId);
 
 					groupsTab.innerHTML += `
 					<li class="nav-item">
@@ -482,6 +484,22 @@
 												</div>
 											</div>
 
+											<div class="row savings">
+													<div class="card shadow mb-4">
+												<div class="card-header py-3 d-flex justify-content-between align-items-center">
+													<div>
+														<h4 class="m-0 font-weight-bold text-primary">Savings Page</h4>
+														<h6 class="m-0 font-weight-bold text-primary">On this page you can organize your savings. Either saving for a specific goal, or just trying to have backup money, you can organize everything here!</h6>
+													</div>
+													<button type="button" id="add-button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#savingsModal">
+														Add new saving goal
+													</button>
+
+
+												</div>
+												<div class="card-body savings-cards-container group-savings-card-container" id="savings-card-${group.Id}" style="display: flex; padding: 10px;"></div>
+											</div>
+											</div>
 										<p class="card-text"><small class="text-muted">Created: ${group.createdAt}</small></p>
 									  </div>
 									</div>
@@ -513,6 +531,26 @@
 		}
 		async function getRoleById(id) {
 			const response = await fetch(`/api/Role/${id}`, {
+				method: "GET",
+				 headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json"
+				},
+				credentials: "include"
+			});
+
+			if (!response.ok) {
+				const errorMessage = await response.json();
+				displayBasicModal("Something went wrong!", "Error");
+				console.error(`Error: ${response.status} - ${errorMessage}`);
+				return null;
+			} else {
+				const result = await response.json()
+				return result;
+			}
+		}
+		async function getGroupSavings(id) {
+			const response = await fetch(`/api/Saving/groupid/${id}`, {
 				method: "GET",
 				 headers: {
 					"Content-Type": "application/json",

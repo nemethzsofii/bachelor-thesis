@@ -161,11 +161,11 @@
 				{ title: "Date" }
 			  ]
 			});
-			async function listAllTransactions(userId, type, group)
+			async function listAllTransactions(userId, typeId, group)
 			{
 				try {
 					var response = "";
-					if(!type && !group){
+					if(!typeId && !group){
 						response = await fetch(`api/Transaction/user/${userId}`, {
 						method: "GET",
 						headers: {
@@ -173,13 +173,13 @@
 						}
 					});
 					}else if(!group){
-						response = await fetch(`api/Transaction/user/${userId}/type/${type}`, {
+						response = await fetch(`api/Transaction/user/${userId}/type/${typeId}`, {
 						method: "GET",
 						headers: {
 							"Content-Type": "application/json"
 						}
 					});
-					}else if(!type){
+					}else if(!typeId){
 						response = await fetch(`api/Transaction/user/${userId}/group/${group}`, {
 						method: "GET",
 						headers: {
@@ -217,11 +217,11 @@
 					for(let i = 0; i < result.length; i ++){
 						console.log("Creating element;");
 
-					const type = result[i].type;
-					const isExpense = type.toLowerCase() === 'expense';
+					const typeId = result[i].typeId;
+					const isExpense = typeId == 2;
 
 					const rowNode = table.row.add([
-						`${isExpense ? '⬇️' : '⬆️'} ${type}`,
+						`${isExpense ? '⬇️ expense' : '⬆️ income'}`,
 						`${result[i].categoryId}`,
 						`${result[i].description}`,
 						`${result[i].amount}`,
