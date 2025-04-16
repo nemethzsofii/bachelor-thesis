@@ -60,3 +60,23 @@ async function getCurrentUser() {
     }
 }
 
+async function fetchSavingsForCurrentUser() {
+    try {
+        var response = await fetch("/api/Saving/current", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Could not fetch savings for current user", response);
+        }
+
+        return await response.json();
+    } catch (err) {
+        console.error("An error occured while fetching savings");
+    }
+    
+}
+
