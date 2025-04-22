@@ -12,141 +12,204 @@
 
 <input id="current-user-id" type="hidden" value="@Model.UserData.Id" />
 
-<div class="row">
-	<div class="col">
-		<div class="input-card income-card">
-			<div class="card border-left-success shadow h-100 py-2">
-				<div class="card-body">
-					<div class="row no-gutters align-items-center">
-						<div class="col mr-2">
-							<div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-								INCOME
-							</div>
-							<div class="h5 mb-0 font-weight-bold text-gray-400">New Income Entry</div>
-						</div>
-						<div class="col-auto">
-							<i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-						</div>
+<div id="index-container" class="container mt-4">
+    <ul class="nav nav-tabs" id="index-tab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="transactions-tab" data-toggle="tab" href="#trans-content" role="tab" aria-controls="trans-content" aria-selected="true">Transactions</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="spendings-tab" data-toggle="tab" href="#spend-content" role="tab" aria-controls="spend-content" aria-selected="false">Spendings</a>
+        </li>
+    </ul>
 
-						<div class="col-auto" style="margin-left: 10px">
-							<button class="add-btn btn btn-success" id="add-income-btn">Add</button>
-						</div>
-					</div>
+    <div class="tab-content" id="index-tab-content">
+        <!-- Transactions Tab -->
+        <div class="tab-pane fade show active" id="trans-content" role="tabpanel" aria-labelledby="transactions-tab" style="padding: 15px">
+            <div class="row">
+                <!-- Income -->
+                <div class="col">
+                    <div class="input-card income-card">
+                        <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">INCOME</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-400">New Income Entry</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                    </div>
+                                    <div class="col-auto" style="margin-left: 10px">
+                                        <button class="add-btn btn btn-success" id="add-income-btn">Add</button>
+                                    </div>
+                                </div>
 
-					<div id="income-input-div" class="input-container" style="display: none; margin-top: 13px">
-						<table style="padding: 3px">
-							<tr>
-								<td><label for="income-amount-input-field">Amount:</label></td>
-								<td><input class="input-amount" id="income-amount-input-field" name="income-amount-input-field" type="number" /></td>
-							</tr>
-							<tr>
-								<td><label for="income-desc-input-field">Description:</label></td>
-								<td><input class="input-desc" id="income-desc-input-field" name="income-desc-input-field" type="text" /></td>
-							</tr>
-								
-						</table>
-						<div class="categoryIncomeDropdownContainer"></div>
+                                <div id="income-input-div" class="input-container" style="display: none; margin-top: 13px">
+                                    <table style="padding: 3px">
+                                        <tr>
+                                            <td><label for="income-amount-input-field">Amount:</label></td>
+                                            <td><input class="input-amount" id="income-amount-input-field" name="income-amount-input-field" type="number" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label for="income-desc-input-field">Description:</label></td>
+                                            <td><input class="input-desc" id="income-desc-input-field" name="income-desc-input-field" type="text" /></td>
+                                        </tr>
+                                    </table>
+                                    <div class="categoryIncomeDropdownContainer"></div>
+                                    <button class="btn save-btn">SAVE</button>
+                                    <button class="btn cancel-btn">CANCEL</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-						<button class="btn save-btn">SAVE</button>
-						<button class="btn cancel-btn">CANCEL</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="col">
-		<div class="input-card expense-card">
-			<div class="card border-left-info shadow h-100 py-2">
-				<div class="card-body">
-					<div class="row no-gutters align-items-center">
-						<div class="col mr-2">
-							<div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-								EXPENSE
-							</div>
-							<div class="h5 mb-0 font-weight-bold text-gray-400">New Expense Entry</div>
-						</div>
-						<div class="col-auto">
-							<i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-						</div>
+                <!-- Expense -->
+                <div class="col">
+                    <div class="input-card expense-card">
+                        <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">EXPENSE</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-400">New Expense Entry</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                    </div>
+                                    <div class="col-auto" style="margin-left: 10px">
+                                        <button class="add-btn btn btn-info" id="add-expense-btn">Add</button>
+                                    </div>
+                                </div>
 
-						<div class="col-auto" style="margin-left: 10px">
-							<button class="add-btn btn btn-info" id="add-expense-btn">Add</button>
-						</div>
-					</div>
+                                <div id="expense-input-div" class="input-container" style="display: none; margin-top: 13px">
+                                    <table style="padding: 3px">
+                                        <tr>
+                                            <td><label for="expense-amount-input-field">Amount:</label></td>
+                                            <td><input class="input-amount" id="expense-amount-input-field" name="expense-amount-input-field" type="number" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label for="expense-desc-input-field">Description:</label></td>
+                                            <td><input class="input-desc" id="expense-desc-input-field" name="expense-desc-input-field" type="text" /></td>
+                                        </tr>
+                                    </table>
+                                    <div class="categoryExpenseDropdownContainer"></div>
+                                    <button class="btn save-btn">SAVE</button>
+                                    <button class="btn cancel-btn">CANCEL</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-					<div id="expense-input-div" class="input-container" style="display: none; margin-top: 13px">
-						<table style="padding: 3px">
-							<tr>
-								<td><label for="expense-amount-input-field">Amount:</label></td>
-								<td><input class="input-amount" id="expense-amount-input-field" name="expense-amount-input-field" type="number" /></td>
-							</tr>
-							<tr>
-								<td><label for="expense-desc-input-field">Description:</label></td>
-								<td><input class="input-desc" id="expense-desc-input-field" name="expense-desc-input-field" type="text" /></td>
-							</tr>
-						</table>
-						<div class="categoryExpenseDropdownContainer"></div>
+            <!-- Transactions Table -->
+            <div class="row justify-content-center">
+                <div class="col-lg-10" style="padding: 30px">
+                    <div class="card border-2 rounded-4 shadow-sm" style="border-color: #36b9cc;">
+                        <div class="card-header text-white rounded-top-4" style="background: linear-gradient(135deg, #4e73df, #1cc88a);">
+                            <h5 class="mb-2 fw-bold text-center">Transactions Table</h5>
+                            <p class="text-white-50 text-center mb-1">Track your income and expenses here.</p>
+                        </div>
 
-						<button class="btn save-btn">SAVE</button>
-						<button class="btn cancel-btn">CANCEL</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                        <div class="card-body bg-white rounded-bottom-4">
+                            <table id="finance-table" class="table table-hover align-middle">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Category</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody">
+                                    <!-- Dynamic rows go here -->
+                                </tbody>
+                                <tfoot class="table-light">
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Category</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Spendings Tab -->
+        <div class="tab-pane fade" id="spend-content" role="tabpanel" aria-labelledby="spendings-tab" style="padding: 15px">
+            <div class="row">
+                <div class="col">
+                    <div class="input-card spending-card">
+                        <div class="card border-left-warning shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Spending Limit</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-400">monthly</div>
+                                        <div style="display: flex; flex-direction: row">
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="spending-limit-text">0</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="spending-limit-text">
+                                                &nbsp;
+                                                Ft
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                    </div>
+                                    <div class="col-auto" style="margin-left: 10px">
+                                        <button class="add-btn btn btn-warning" id="add-income-btn">Change</button>
+                                    </div>
+                                </div>
+
+                                <div id="spending-input-div" class="input-container" style="display: none; margin-top: 13px">
+                                    <table style="padding: 3px">
+                                        <tr>
+                                            <td><label for="spending-limit-input-field">Amount:</label></td>
+                                            <td><input class="input-amount" id="spending-limit-input-field" name="spending-limit-input-field" type="number" /></td>
+                                        </tr>
+                                    </table>
+                                    <button class="btn save-btn">SAVE</button>
+                                    <button class="btn cancel-btn">CANCEL</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col">
+                    <canvas id="monthly-spending-pie-chart" width="300" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-
-<div class="row justify-content-center">
-	<div class="col-lg-10" style="padding: 30px">
-		<div class="card border-2 rounded-4 shadow-sm" style="border-color: #36b9cc;">
-			<div class="card-header text-white rounded-top-4" style="background: linear-gradient(135deg, #4e73df, #1cc88a);">
-				<h5 class="mb-2 fw-bold text-center">Transactions Table</h5>
-				<p class="text-white-50 text-center mb-1">
-					This is your central hub for tracking all your financial activity. Easily searchable and filterable, this table gives you a clear overview of your income and expenses.
-				</p>
-				<p class="text-white-50 text-center mb-0">
-					Use this table to stay in control of your money, spot patterns, and keep your budget on track.
-				</p>
-			</div>
-
-			<div class="card-body bg-white rounded-bottom-4">
-				<table id="finance-table" class="table table-hover align-middle">
-					<thead class="table-primary">
-						<tr>
-							<th>Type</th>
-							<th>Category</th>
-							<th>Description</th>
-							<th>Amount</th>
-							<th>Date</th>
-						</tr>
-					</thead>
-					<tbody id="tbody">
-						<!-- Dynamic rows go here -->
-					</tbody>
-					<tfoot class="table-light">
-						<tr>
-							<th>Type</th>
-							<th>Category</th>
-							<th>Description</th>
-							<th>Amount</th>
-							<th>Date</th>
-						</tr>
-					</tfoot>
-				</table>
-			</div>
-		</div>
-	</div>
-</div>
-
 
 <script src="~/js/add-income-expense.js" asp-append-version="true"></script>
 <script src="~/js/utils.js" asp-append-version="true"></script>
+<script src="~/js/monthly-spending.js" asp-append-version="true"></script>
 <script defer>
-	document.addEventListener("DOMContentLoaded", function () {
+	document.addEventListener("DOMContentLoaded", async function () {
 			populateCategoryDropdown(1, "categoryIncomeDropdownContainer");
 			populateCategoryDropdown(2, "categoryExpenseDropdownContainer");
 			var currentUserId = parseInt(document.getElementById("current-user-id").value, 10);
+
+            //display monthly spending limit
+            try{
+                var limit = await getMonthlySpendingLimit(currentUserId);
+                document.getElementById("spending-limit-text").textContent = limit;
+            }catch(err){
+                console.log(err);
+            }
+            
 
 			var table = new DataTable('#finance-table', {
 			  columns: [
@@ -167,45 +230,6 @@
 				{ title: "Date" }
 			  ]
 			});
-			async function listAllTransactions(userId, typeId, group)
-			{
-				try {
-					var response = "";
-					if(!typeId && !group){
-						response = await fetch(`api/Transaction/user/${userId}`, {
-						method: "GET",
-						headers: {
-							"Content-Type": "application/json"
-						}
-					});
-					}else if(!group){
-						response = await fetch(`api/Transaction/user/${userId}/type/${typeId}`, {
-						method: "GET",
-						headers: {
-							"Content-Type": "application/json"
-						}
-					});
-					}else if(!typeId){
-						response = await fetch(`api/Transaction/user/${userId}/group/${group}`, {
-						method: "GET",
-						headers: {
-							"Content-Type": "application/json"
-						}
-					});
-					}
-
-					if (!response.ok) {
-						throw new Error(`Error: ${response.status} - ${response.statusText}`);
-					}
-
-					var result = await response.json();
-					console.log("Listed transactions successfully:", result);
-					return result;
-				} catch (error) {
-					console.error("Failed to list transactions:", error);
-					return null;
-				}
-			}
 
 			async function createHistoryTable(divId){
 				var result = await listAllTransactions(currentUserId);
