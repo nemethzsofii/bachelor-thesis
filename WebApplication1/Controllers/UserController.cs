@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebApplication1.Data;   // Namespace where ApplicationDbContext is
-using WebApplication1.Model;  // Namespace where User model is
+using WebApplication1.Data;
+using WebApplication1.Model;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +10,9 @@ using System.Net.Mail;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Security.Cryptography;
+using System.Text;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -72,6 +75,9 @@ public class UserController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUser(int id, [FromBody] JsonElement userUpdate)
     {
+        System.Diagnostics.Debug.WriteLine("######");
+        System.Diagnostics.Debug.WriteLine(userUpdate);
+
         var user = await _context.Users.FindAsync(id);
         if (user == null) return NotFound();
 
@@ -107,7 +113,41 @@ public class UserController : ControllerBase
             }
         }
         if (userUpdate.TryGetProperty("Fullname", out var fullname)) user.Fullname = fullname.GetString();
-        if (userUpdate.TryGetProperty("PasswordHash", out var passwordHash)) user.PasswordHash = passwordHash.GetString();
+        
+        try
+        {
+            if (userUpdate.TryGetProperty("MonthlySpendingLimit", out var limit))
+            {
+                user.MonthlySpendingLimit = limit.GetInt32();
+            }
+        }catch(Exception)
+        {
+            return BadRequest(new { message = "MonthlySpendingLimit should be an integer." });
+        }
+
+        if (userUpdate.TryGetProperty("Password", out var passwordJson))
+        {
+            try
+            {
+                string oldPassword = passwordJson.GetProperty("oldPw").GetString();
+                string newPassword = passwordJson.GetProperty("newPw").GetString();
+
+                var salt = user.Salt;
+                var oldHash = HashPassword(oldPassword, salt);
+                if (user.PasswordHash != oldHash)
+                {
+                    return BadRequest(new { message = "Old password is incorrect." });
+                }
+
+                var newHash = HashPassword(newPassword, salt);
+                user.PasswordHash = newHash;
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e);
+                return BadRequest(new { message = "Failed to update password." });
+            }
+        }
 
         await _context.SaveChangesAsync();
         return NoContent();
@@ -126,34 +166,8 @@ public class UserController : ControllerBase
         return NoContent();
     }
 
-    // 🔹 POST: api/User/{action}/{id} (Change one attribute of a user)
-    [HttpPut("{action}/{userId}")]
-    public async Task<IActionResult> UpdateUserAttribute(string action, int userId)
-    {
-        var user = await _context.Users.FindAsync(userId);
-        if (user == null) return NotFound();
-
-        switch (action)
-        {
-            case "change-email":
-                user.Email = "email";
-                break;
-            case "change-fullname":
-                user.Fullname = "fullname";
-                break;
-            case "change-username":
-                user.Username = "email";
-                break;
-            default:
-                return BadRequest("Invalid action.");
-        }
-
-        await _context.SaveChangesAsync();
-        return Ok(new { message = "User attribute updated successfully" });
-    }
-
     // Helper functions
-    private bool IsValidEmail(string emailaddress)
+    private static bool IsValidEmail(string emailaddress)
     {
         try
         {
@@ -165,6 +179,20 @@ public class UserController : ControllerBase
         {
             return false;
         }
+    }
+
+    private static bool VerifyPassword(string password, string storedHash, string storedSalt)
+    {
+        using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(storedSalt));
+        var computedHash = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(password)));
+        return computedHash == storedHash;
+    }
+
+    private static string HashPassword(string password, string salt)
+    {
+        using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(salt));
+        var computedHash = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(password)));
+        return computedHash;
     }
 
 }

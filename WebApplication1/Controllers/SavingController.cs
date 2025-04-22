@@ -58,7 +58,7 @@ namespace WebApplication1.Controllers
             int currentUserId = int.Parse(userIdClaim);
 
             return await _context.Savings
-                .Where(s => s.UserId == currentUserId)
+                .Where(s => s.UserId == currentUserId && s.GroupId == null)
                 .ToListAsync();
         }
 
@@ -77,6 +77,7 @@ namespace WebApplication1.Controllers
                 Title = savingDto.Title,
                 Description = savingDto.Description,
                 GoalAmount = savingDto.GoalAmount,
+                GroupId = savingDto.GroupId,
                 Deadline = savingDto.Deadline,
                 CurrentAmount = 0,
                 CreatedAt = DateTime.UtcNow,
@@ -86,7 +87,13 @@ namespace WebApplication1.Controllers
             _context.Savings.Add(saving);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetById), new { id = saving.Id }, saving);
+            var referer = Request.Headers["Referer"].ToString();
+            if (!string.IsNullOrEmpty(referer))
+            {
+                return Redirect(referer);
+            }
+
+            return Redirect("/Finance/Savings");
         }
 
         // 🔹 PUT: api/Saving/{id}
@@ -100,6 +107,7 @@ namespace WebApplication1.Controllers
 
             saving.Title = updatedSaving.Title;
             saving.Description = updatedSaving.Description;
+            saving.GroupId = updatedSaving.GroupId;
             saving.GoalAmount = updatedSaving.GoalAmount;
             saving.Deadline = updatedSaving.Deadline;
             saving.CurrentAmount = updatedSaving.CurrentAmount;
@@ -159,6 +167,8 @@ namespace WebApplication1.Controllers
     {
         [FromForm]
         public string Title { get; set; }
+        [FromForm]
+        public int? GroupId { get; set; }
 
         [FromForm]
         public string? Description { get; set; }

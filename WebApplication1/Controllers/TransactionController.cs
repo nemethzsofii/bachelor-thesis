@@ -7,6 +7,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApplication1.Utils;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
+using System;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -150,6 +152,21 @@ public class TransactionController : ControllerBase
             .ToListAsync();
 
         return transactions;
+    }
+
+    // 🔹 GET: DistinctYears/{currentUserId} (Fetch distinct years of transactions for given user)
+    [HttpGet("DistinctYears/{currentUserId}")]
+    public async Task<ActionResult<IEnumerable<int>>> GetDistinctTransactionYears(int currentUserId)
+    {
+        var years = await _context.Transactions
+            .Where(t => t.UserId == currentUserId)
+            .Select(t => t.Date.Year)
+            .Distinct()
+            .OrderByDescending(y => y)
+            .ToListAsync();
+
+
+        return years;
     }
 
     [HttpGet("DownloadReportForCurrent")]
