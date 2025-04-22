@@ -1,38 +1,61 @@
 ﻿document.addEventListener("DOMContentLoaded", async function () {
     const currentUserId = await getCurrentUser();
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+    await sleep(1000); //wait till group cards get generated
+    var savingsCardsContainers = document.querySelectorAll(".savings-cards-container");
 
-    var savingsCardsContainer = document.querySelectorAll("savings-cards-container");
-    if (savingsCardsContainer.classList.contains("group-savings-card-container")) {
-        console.log("MyGroups.html-s js file is handling group savings");
-    } else {
-        var response = await fetchSavingsForCurrentUser();
-        console.log(response);
-    }
-    
-    for (let i = 0; i < response.length; i++) {
-        createSavingsCard(savingsCardsContainer, response[i]);
-    }
-
-    savingsCardsContainer.addEventListener('click', async function (e) {
-        console.log("clicked");
-        if (e.target.classList.contains('add-savings-button')) {
-            try {
-                const id = e.target.dataset.id;
-                await addToSavings(id);
-            } catch (err) {
-                console.error(err);
-            }
+    for (let i = 0; i < savingsCardsContainers.length; i++) {
+        console.log(savingsCardsContainers[i]);
+        if (savingsCardsContainers[i].classList.contains("group-savings-card-container")) {
+            console.log("group savings");
+            var response = await fetchSavingsForGroup(parseInt(savingsCardsContainers[i].id));
+        } else {
+            console.log("personal");
+            var response = await fetchSavingsForCurrentUser();
         }
 
-        if (e.target.classList.contains('withdraw-savings-button')) {
-            try {
-                const id = e.target.dataset.id;
-                await withdrawFromSavings(id);
-            } catch (err) {
-                console.error(err);
-            }
+        for (let j = 0; j < response.length; j++) {
+            createSavingsCard(savingsCardsContainers[i], response[j]);
         }
+
+        savingsCardsContainers[i].addEventListener('click', async function (e) {
+            console.log("clicked");
+            if (e.target.classList.contains('add-savings-button')) {
+                try {
+                    const id = e.target.dataset.id;
+                    await addToSavings(id);
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+
+            if (e.target.classList.contains('withdraw-savings-button')) {
+                try {
+                    const id = e.target.dataset.id;
+                    await withdrawFromSavings(id);
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+        });
+    }
+
+    $('#savingsDeleteModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget)
+        var savingId = button.data('saving-id')
+       
+        console.log(savingId)
+
+        var modal = $(this)
+        modal.find('.modal-hidden-saving-id').val(savingId)
+    })
+
+    var savingsDeleteButton = document.getElementById("savings-delete-button");
+    savingsDeleteButton.addEventListener("click", async function () {
+        var savingId = parseInt(document.querySelector(".modal-hidden-saving-id").value);
+        deleteSaving(savingId);
     });
+
     async function addToSavings(id) {
         const input = document.getElementById(`amount-input-${id}`);
         const amount = parseInt(input.value);
@@ -97,11 +120,16 @@
 
 
     function createSavingsCard(container, data) {
+        console.log(data);
         try {
             const hasGoal = data.goalAmount !== null && data.goalAmount > 0;
             const progressPercent = hasGoal
                 ? Math.min(100, Math.round((data.currentAmount / data.goalAmount) * 100))
                 : 0;
+
+            const cardBackground = progressPercent >= 100
+                ? "lightgreen"
+                : "white";
 
             let progressColor = 'bg-danger';
             if (progressPercent >= 75) {
@@ -137,14 +165,13 @@
 
             container.innerHTML += `
         <div class="card text-white mb-3 savings-card" style="
-            max-width: 20rem; 
+            width: 19rem; 
             margin: 8px; 
             border: none; 
             border-radius: 1rem; 
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            background: linear-gradient(145deg, #6fb1fc, #4364f7);
         ">
-            <div class="card-header" style="
+            <div class="card-header py-3 d-flex justify-content-between align-items-center" style="
                 background: linear-gradient(to right, #667eea, #764ba2);
                 border-top-left-radius: 1rem;
                 border-top-right-radius: 1rem;
@@ -152,9 +179,13 @@
                 font-size: 1.1rem;
             ">
                 ${data.title}
+                <button type="button" id="add-button" class="btn text-white" data-toggle="modal" data-target="#savingsDeleteModal" data-saving-id="${data.id}" style="background: transparent; border: none;">
+                    <i class="bi bi-trash"></i>
+                </button>
+
             </div>
             <div class="card-body" style="
-                background-color: white; 
+                background-color: ${cardBackground} !important; 
                 color: #333; 
                 border-bottom-left-radius: 1rem; 
                 border-bottom-right-radius: 1rem;
