@@ -27,7 +27,8 @@
 							Change
 						</button>
 						<div class="change-container" style="display:none">
-							<input type="email" class="change-input" value="" />
+							<label for="change-username">New username:</label>
+							<input type="email" id="change-username" name="change-username" class="change-input" value="" />
 							<button class="save-btn btn-success">Save</button>
 							<button class="cancel-btn btn-outline-danger">Cancel</button>
 						</div>
@@ -43,7 +44,8 @@
 							Change
 						</button>
 						<div class="change-container" style="display:none">
-							<input type="email" class="change-input" value="" />
+							<label for="change-email">New e-mail:</label>
+							<input id="change-email" name="change-email" type="email" class="change-input" value="" />
 							<button class="save-btn btn-success">Save</button>
 							<button class="cancel-btn btn-outline-danger">Cancel</button>
 						</div>
@@ -59,7 +61,8 @@
 							Change
 						</button>
 						<div class="change-container" style="display:none">
-							<input type="email" class="change-input" value="" />
+							<label for="change-fullname">New full name:</label>
+							<input type="text" id="change-fullname" name="change-fullname" class="change-input" value="" />
 							<button class="save-btn btn-success">Save</button>
 							<button class="cancel-btn btn-outline-danger">Cancel</button>
 						</div>
@@ -71,6 +74,7 @@
 		<button class="btn btn-primary btn-icon-split change-pw-btn">Change Password</button>
 	</div>
 </div>
+<script src="~/js/utils.js"></script>
 <script defer>
 	document.addEventListener("DOMContentLoaded", function () {
 		document.body.addEventListener("click", function (event) {
@@ -127,34 +131,5 @@
 				window.location.href = "/Account/ChangePassword";
 			}
 		});
-
-		async function updateUser(id, updateData) {
-			const response = await fetch(`api/User/${id}`, {
-				method: "PUT",
-				 headers: {
-					"Content-Type": "application/json",
-					"Accept": "application/json"
-				},
-				credentials: "include",
-				body: JSON.stringify(updateData)
-			});
-
-			if (!response.ok) {
-				const errorMessage = await response.json();
-				if (errorMessage["message"] == "Invalid email format.") {
-					alert("Invalid email format!");
-				}else if(errorMessage["message"] == "Username already taken."){
-					alert("Username already taken!");
-				}else {
-					console.log(errorMessage);
-					alert("Something went wrong!");
-				}
-				console.error(`Error: ${response.status} - ${errorMessage}`);
-				return "User update failed.";
-			} else {
-				location.reload();
-				return "User updated successfully!";
-			}
-		}
 	});
 </script>
