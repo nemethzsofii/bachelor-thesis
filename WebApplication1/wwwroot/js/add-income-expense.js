@@ -44,7 +44,10 @@
             var addButton = container.querySelector(".add-btn");
 
             inputAmount.value = "";
-            inputDesc.value = "";
+            if (inputDesc) {
+                inputDesc.value = "";
+            }
+            
             inputContainer.style.display = "none";
             addButton.style.display = "block";
         }
@@ -54,9 +57,13 @@
             console.log("save button clicked!");
             var container = event.target.closest(".input-card");
             var inputAmount = container.querySelector(".input-amount").value;
-            var inputDesc = container.querySelector(".input-desc").value;
-            var categoryId = parseInt(container.querySelector(".input-category").value);
-            console.log(categoryId);
+            var inputDescElement = container.querySelector(".input-desc");
+            var categoryIdElement = container.querySelector(".input-category");
+            if (inputDescElement && categoryIdElement) {
+                var inputDesc = inputDescElement.value;
+                var categoryId = categoryIdElement.value;
+            }
+            
             if (container.classList.contains("group-card")) {
                 // case: GROUP TRANSACTION
                 var groupId = parseInt(container.querySelector(".input-group").value);
@@ -73,6 +80,15 @@
                 // case: add expense
                 console.log("adding expense!");
                 createTransaction(currentUserId, parseInt(inputAmount), 2, categoryId, inputDesc, groupId);
+            } else if (container.classList.contains("spending-card")) {
+                // case: change spending limit
+                console.log("changing spending limit!");
+                try {
+                    updateUser(currentUserId, { "MonthlySpendingLimit": parseInt(inputAmount) });
+                } catch (err) {
+                    console.log(err);
+                }
+                
             } else {
                 console.log("invalid save class!");
             }

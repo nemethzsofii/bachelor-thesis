@@ -3,7 +3,6 @@
 @{
 
 }
-
 <div class="card shadow mb-4">
 	<div class="card-header py-3 d-flex justify-content-between align-items-center">
 		<div>
@@ -16,7 +15,7 @@
 
 		
 	</div>
-    <div class="card-body savings-cards-container" style="display: flex; padding: 10px;"></div>
+    <div class="card-body savings-cards-container" style="display: flex; flex-wrap: wrap; padding: 10px;"></div>
 </div>
 
 <!-- Modal -->
@@ -32,7 +31,7 @@
             </div>
 
             <div class="modal-body">
-                <form id="savings-form" action="/api/Savings" method="POST">
+                <form id="savings-form" action="/api/Saving" method="POST">
                     <div class="form-group">
                         <label for="Title">Title</label>
                         <input type="text" class="form-control" id="Title" name="Title" required />
@@ -55,6 +54,34 @@
             </div>
 
             <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Savings Delete Modal -->
+<div class="modal fade" id="savingsDeleteModal" tabindex="-1" role="dialog" aria-labelledby="savingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content rounded-3 shadow">
+
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="savingsModalLabel">Are you sure you want to delete saving?</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <h7>This action cannot be undone.</h7>
+
+                <!-- modal.onShow jquery function will fill this value with the deletable saving's id-->
+                <input type="hidden" class="modal-hidden-saving-id" value="" />
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="savings-delete-button" class="btn btn-danger">Delete</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
             </div>
 

@@ -29,7 +29,87 @@
         location.reload();
     });
 }
+async function changeSpendingLimit(userId, newValue) {
+    try {
+        const response = await fetch(`/api/User/${userId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: {
+                "MonthlySpendingLimit": newValue
+            }
+        });
 
+        if (!response.ok) {
+            throw new Error("Failed to update monthly spending limit.");
+        }
+
+    } catch (err) {
+        console.error("Error updating monthly spending limit:", err);
+        return null;
+    }
+}
+async function updateUser(id, updateData) {
+    const response = await fetch(`/api/User/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify(updateData)
+    });
+
+    if (!response.ok) {
+        const errorMessage = await response.json();
+        if (errorMessage["message"] == "Invalid email format.") {
+            alert("Invalid email format!");
+        } else if (errorMessage["message"] == "Username already taken.") {
+            alert("Username already taken!");
+        } else {
+            console.log(errorMessage);
+            alert("Something went wrong!");
+        }
+        console.error(`Error: ${response.status} - ${errorMessage}`);
+        return "User update failed.";
+    } else {
+        location.reload();
+        return "User updated successfully!";
+    }
+}
+async function getMonthlySpendingLimit(userId) {
+    try {
+        const response = await fetch(`/api/User/${userId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch user.");
+        }
+
+        const user = await response.json();
+        try {
+            limit = user["monthlySpendingLimit"];
+            console.log(limit);
+            console.log(user);
+            if (limit) {
+                return parseInt(limit);
+            }
+            return 0;
+        } catch (err) {
+            console.log(err);
+            return -1;
+        }
+
+    } catch (err) {
+        console.error("Error fetching current user:", err);
+        return null;
+    }
+}
 
 async function getCurrentUserId() {
     var currentUser = await getCurrentUser();
@@ -62,7 +142,7 @@ async function getCurrentUser() {
 
 async function getCategoryById(id) {
     try {
-        const response = await fetch(`api/Category/${id}`, {
+        const response = await fetch(`/api/Category/${id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -101,6 +181,55 @@ async function fetchSavingsForCurrentUser() {
     }   
 }
 
+async function fetchSavingsForGroup(groupId) {
+    try {
+        var response = await fetch(`/api/Saving/groupid/${groupId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Could not fetch savings for group", response);
+        }
+
+        return await response.json();
+    } catch (err) {
+        console.error("An error occured while fetching savings for group");
+    }
+}
+
+async function fetchGroupMembers(groupId) {
+    try {
+        var response = await fetch(`/api/GroupMembership/ByGroup/${groupId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Could not fetch memberships for group", response);
+        }
+
+        return await response.json();
+    } catch (err) {
+        console.error("An error occured while fetching memberships for group");
+    }
+}
+
+async function deleteSaving(id) {
+    const res = await fetch(`/api/Saving/${id}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+
+    if (!res.ok) throw new Error("Failed to delete saving");
+    location.reload();
+}
 async function populateCategoryDropdown(typeId, divClass) {
     const categories = await getCategoriesByType(typeId);
 
@@ -138,7 +267,7 @@ async function populateCategoryDropdown(typeId, divClass) {
 
 async function getCategoriesByType(typeId) {
     try {
-        var response = await fetch(`api/Category/typeId/${typeId}`, {
+        var response = await fetch(`/api/Category/typeId/${typeId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -155,3 +284,101 @@ async function getCategoriesByType(typeId) {
     }
 }
 
+async function getUserById(userId) {
+    try {
+        var response = await fetch(`/api/User/${userId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Could not fetch user", response);
+        }
+
+        return await response.json();
+    } catch (err) {
+        console.error("An error occured while fetching user");
+        return null;
+    }
+}
+
+async function getGroupById(groupId) {
+    try {
+        var response = await fetch(`/api/Group/${groupId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Could not fetch group", response);
+        }
+
+        return await response.json();
+    } catch (err) {
+        console.error("An error occured while fetching group");
+        return null;
+    }
+}
+
+async function fetchTransactionDistYearsForCurrent() {
+    try {
+        const currentUserId = await getCurrentUserId();
+        var response = await fetch(`/api/Transaction/DistinctYears/${currentUserId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Could not fetch distinct transaction years", response);
+        }
+
+        return await response.json();
+    } catch (err) {
+        console.error("An error occured while fetching distinct transaction years");
+    }
+}
+
+async function listAllTransactions(userId, typeId, group) {
+    try {
+        var response = "";
+        if (!typeId && !group) {
+            response = await fetch(`api/Transaction/user/${userId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+        } else if (!group) {
+            response = await fetch(`api/Transaction/user/${userId}/type/${typeId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+        } else if (!typeId) {
+            response = await fetch(`api/Transaction/user/${userId}/group/${group}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+        }
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+
+        var result = await response.json();
+        console.log("Listed transactions successfully:", result);
+        return result;
+    } catch (error) {
+        console.error("Failed to list transactions:", error);
+        return null;
+    }
+}
