@@ -10,25 +10,50 @@ A főbb funkciók közé tartozik, hogy bevételeket és kiadásokat lehet rögz
 
 \section{Rendszerkövetelmények}
 
-Mivel egy webes alkalmazásról van szó, ezért különleges gépigény nem szükséges. Szinte az összes böngésző támogatott.
+Mivel egy webes alkalmazásról van szó, ezért különleges gépigény nem szükséges. Szinte az összes böngésző támogatott, ahogyan azt a \ref{tab:browsers}. táblázat is mutatja.\footnote{Megjegyzés: Mivel a Microsoftnak nem található hivatalos adata a böngészők legrégebbi támogatott verzióira, ezért a táblázat csupán egy általános modern web applikáció böngésző kritériumait mutatja.}
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ | m{0.25\textwidth} | m{0.25\textwidth} | m{0.35\textwidth} | }
+		\hline
+		\textbf{Böngésző} & \textbf{Minimum Verzió} & \textbf{Támogatás} \\
+		\hline
+		Google Chrome & 70+ & Teljes \\
+		\hline
+		Mozilla Firefox & 68+ & Teljes \\
+		\hline
+		Microsoft Edge (Chromium) & 79+ & Teljes (a régi Edge (EdgeHTML) nem támogatott) \\
+		\hline
+		Safari & 13+ & Teljes \\
+		\hline
+		Opera & 57+ & Teljes \\
+		\hline
+		Internet Explorer & Nem alkalmazható & Nem támogatott a .NET 8-ban \\
+		\hline
+	\end{tabular}
+	\caption{Böngésző Támogatás}
+	\label{tab:browsers}
+\end{table}
 
 \section{Felhasználói esetek}
 Az alkalmazás felhasználói eseteit ez a bejegyzés fogja taglalni jobban, képernyőképekkel magyarázva.
 
 \subsection{Fiók}
+A felhasználói fiókok kezelése egy klasszikus Regisztráció-Bejelentkezés-Profil hármasban került kialakításra. A felhasználónak a webalkalmazás elérése érdekében regisztrálnia kell , majd sikeres regisztrációt követően bejelentkezhet a felületre (részletes kifejtés: <<>>). A belső oldalra érve elérhető egy "Profil" oldal a bal menüsávból is, illetve a jobb felső sarokban az ember ikonra kattintva a legördülő menüből is kiválaszható ez a menüpont. Szintén ezen a két helyen találjuk a kijelentkezés gombot is, amellyel megszüntethetjük az adott munkamenetet és kiléphetünk a fiókból. Ezen funkciók részletes leírását a \ref{tab:account}. táblázat foglalja össze.
 \begin{table}[H]
 	\centering
 	\begin{tabular}{ | m{0.25\textwidth} | m{0.65\textwidth} | }
 		\hline
 		\textbf{Funkció} & \textbf{Leírás} \\
 		\hline \hline
-		\emph{Bejelentkezés} & Bejelentkezés egy egyedi felhasználónévvel és egy jelszóval lehetséges. \\
+		\emph{Bejelentkezés} & Bejelentkezés egy egyedi felhasználónévvel és egy jelszóval lehetséges. (\ref{fig:login}. ábra) \\
 		\hline
-		\emph{Regisztráció} &  Regisztrálni lehet az oldalra a következő adatok megadásával: e-mail cím, felhasználónév (egyedi), teljes név, jelszó (minimum 8 karakter, legalább 1 szám, legalább 1 nagy betű, legalább 1 speciális karakter).  \\
+		\emph{Regisztráció} &  Regisztrálni lehet az oldalra a következő adatok megadásával: e-mail cím, felhasználónév (egyedi), teljes név, jelszó. (\ref{fig:register}. ábra)  \\
 		\hline
-		\emph{Elfelejtett jelszó} & Ha a felhasználó elfelejtette a jelszavát, akkor a Bejelentkezés felületen az "Elfelejtett jelszó" hivatkozásra kattintva megjelenik egy új felület, csak egy e-mail beviteli mezővel. A rendszer küldeni fog egy egyedi tokennel ellátott linket a megadott e-mail címre (amely 30 percig érvényes), és ezen a linken tudja a felhasználó majd megadni az új jelszavát (szintén a biztonsági kritériumoknak megfelelő formában), és sikeres bejelentkezést követően már bent is lesz a fiókjában. \\
+		\emph{Profil} & A Profil oldalon lehet a fiókhoz tartozó adatokat módosítani: a felhasználónevet, a teljes nevet, illetve az e-mail címet is. Itt elérhető még egy "Change Pass" gomb is, amely elnavigálja a felhasználót a jelszó megváltoztató felületre. A profil oldal használatát a \ref{tab:profile}. táblázat fejti ki bővebben. (\ref{fig:profile}. ábra) \\
 		\hline
-		\emph{Kijelentkezés} & Ha a felhasználó befejezte kívánt tevékenységét, akkor a bal oldali menüsáv alján található "Logout" gomb megnyomásával tud kijelentkezni. Alapvetően 30 perc inaktivitás után "dob le" az oldal (azaz jár le az adott session). \\
+		\emph{Jelszó módosítás} & A Profil oldalról lehet a jelszó változtató felületet elérni a "Change Pass" gomb megnyomásával. Itt meg kell adni a következő adatokat: régi jelszó, új jelszó, új jelszó megerősítése. \\
+		\hline
+		\emph{Kijelentkezés} & Ha a felhasználó befejezte kívánt tevékenységét, akkor a bal oldali menüsáv alján található "Logout" gomb megnyomásával tud kijelentkezni. A kijelentkező gomb még elérhető a jobb felső sarokban található ember ikonra kattintva legördülő menüben is. \\
 		\hline
 	\end{tabular}
 	\caption{Fiók műveletek}
@@ -37,9 +62,16 @@ Az alkalmazás felhasználói eseteit ez a bejegyzés fogja taglalni jobban, ké
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[height=180px]{img/login-screenshot}
+	\includegraphics[height=180px]{img/login}
 	\caption{Screenshot: Bejelentkező felület}
 	\label{fig:login}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[height=180px]{img/register}
+	\caption{Screenshot: Regisztrációs felület}
+	\label{fig:register}
 \end{figure}
 
 \subsection{Profil}
@@ -52,9 +84,9 @@ A profil oldalt a bal menüsávből érhetjük el.
 		\hline \hline
 		\emph{Adatok megtekintése} & A regisztrációnál megadott személyes adatait a felhasználó itt tekintheti meg. \\
 		\hline
-		\emph{Adatok módosítása} &  A személyes adatok módosítására is itt van lehetőség, egyszerű beviteli mezőkkel lehet módosítani a felhasználónevet (egyedi), teljes nevet és e-mail címet.  \\
+		\emph{Adatok módosítása} &  A személyes adatok módosítására is itt van lehetőség, egyszerű beviteli mezőkkel lehet módosítani a felhasználónevet (egyedi), teljes nevet és e-mail címet. A "Change" gombra kattintva előugrik egy beviteli mező egy "Save" és "Cancel" gombbal kiegészítve. Az előbbi megpróbálja végrehajtani a kért módosítást, és jelzi az esetlegesen fellépő hibát (érvénytelen e-mail cím, foglalt felhasználónév, stb.) a felhasználó felé.  \\
 		\hline
-		\emph{Jelszó módosítás} & Ha a felhasználó módosítani kívánja a jelszavát, akkor a "Jelszó módosítása" gombra kattintva megjelenik egy új felület, két jelszó beviteli mezővel (új jelszó, új jelszó megerősítése). Itt szintén érvényesek a korábban taglalt (2.1 táblázat) biztonsági kritériumok. Ezután sikeres bejelentkezést követően már bent is lesz a fiókjában. \\
+		\emph{Jelszó módosítás} & Ha a felhasználó módosítani kívánja a jelszavát, akkor a "Change Password" gombra kattintva megjelenik egy új felület, három szerveren is validált jelszó beviteli mezővel (régi, új, új megerősítése). \\
 		\hline
 	\end{tabular}
 	\caption{Profil oldal}
@@ -63,7 +95,7 @@ A profil oldalt a bal menüsávből érhetjük el.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[height=190px]{img/profile-screenshot}
+	\includegraphics[height=190px]{img/profile}
 	\caption{Screenshot: Profil felület}
 	\label{fig:profile}
 \end{figure}
