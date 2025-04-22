@@ -8,8 +8,7 @@
         public string Fullname { get; set; }
         public string Salt { get; set; }
         public string PasswordHash { get; set; }
-
-        public DateOnly BirthYear { get; set; }
+        public int MonthlySpendingLimit { get; set; }
     }
 
 }
