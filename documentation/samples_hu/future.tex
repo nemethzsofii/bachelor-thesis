@@ -1,15 +1,23 @@
 \chapter{Továbbfejlesztési lehetőségek}
 \label{ch:future}
 
-Egy alkalmazást véleményem szerint gyakorlatilag soha nem lehet teljesen befejezettnek tekinteni. Mindig lehet hova fejleszteni, mindig lesznek új ötletek hozzá, illetve ha más nem is, újabb technológiák egészen biztosan. És egy programozó is folyamatosan tanul, és egyre jobb és jobb termékeket igyekszik kiadni a kezei közül.
+Egy alkalmazást véleményem szerint gyakorlatilag soha nem lehet teljesen befejezettnek tekinteni. Mindig lehet hova fejleszteni, és mindig lesznek új ötletek hozzá, illetve ha más nem is, újabb technológiák egészen biztosan. És egy programozó is folyamatosan tanul, egyre jobb és jobb termékeket igyekszik kiadni a kezei közül.
 
-Ezen webalkalmazás továbbfejlesztésére sok ötletem van, amik megvalósítása már nem esett jelen projekt keretei közé. A következő fejezetben ezeket fogom röviden kifejteni.
+Ezen webalkalmazás továbbfejlesztésére számos olyan ötletem van, amelyek megvalósítása már nem esett jelen projekt keretei közé. A következő fejezetben ezeket fogom röviden kifejteni.
 
 \section{Statisztikák}
-A "Reports" oldal jelenleg 2 egyszerűen kiszámított diagramot tartalmaz csak, de itt azt gondolom sokkal nagyobb potenciál is lehetne. Akár AI modellekkel kiszámolni a statisztikákat, a költési trendeket és ezáltal személyre szabott tanácsadást biztosítani a felhasználónak. statisztika sokszínű eszközeit kihasználva az adattengerből hasznos következtetéseket levonni.
+A "Reports" oldal jelenleg 2 darab egyszerű, összegző diagramot tartalmaz csak, de itt azt gondolom sokkal nagyobb potenciál is lehetne. Akár AI modellekkel előállítani statisztikákat, elemezni a költési trendeket, és ezáltal személyre szabott pénzügyi tanácsadást biztosítani a felhasználónak.
+
+Megjegyezném, hogy AI integráció nélkül is érdemes lenne a statisztika sokszínű eszközeit jobban kihasználni, és az adattengerből hasznos következtetéseket levonni.
 \section{Tranzakciók}
-A tranzakciók lekövetésére és megjelenítésére is számos jobb módszer lehetne, mint amit én ebben a projektben megvalósítottam. A felhasználónak például jelentősen megkönnyítené a dolgát, ha nem manuálisan kéne bevinnie az adott költéseket, hanem blokkokat fényképezve, vagy akár bankártyához csatolva lehetne nyomon követni ezeket.
+A tranzakciók lekövetésére és megjelenítésére is számos jobb módszer lehetne, mint amit én ebben a projektben megvalósítottam. A felhasználónak például jelentősen megkönnyítené a dolgát, ha nem manuálisan kellene bevinnie mindig a kiadásait. Erre nyújthat megoldást egy beépített AI technológia, amely egy lefotózott blokk/számla tartalmát értelmezni tudja, és automatikusan, tételenként, rögzíti az alkalmazásba. Ezen felül még lehetne ismétlődő bevételeket és kiadásokat beállítani (például fizetés, lakbér, stb.), ezzel is csökkentvén a felhasználói beavatkozást.
 \section{Csoportok}
-A csoportos funkciókban rengeteg potenciál bújkál még. Közös megtakarítások, motivációs taktikák.
+
+A csoportos funkciókban szerintem rengeteg potenciál bújik meg. A közös megtakarítások lehetőséget adnak arra, hogy barátok, családtagok vagy akár munkatársak együtt kezeljék bizonyos pénzügyeiket, megtakarításaikat. Az alap koncepción nem sokat változtatnék, inkább a kivitelezésen és a plusz funkciókon. A csoportos takarékoskodás nemcsak anyagi szempontból lehet hatékonyabb, hanem pszichológiai szempontból is motiváló. Ha mások is részt vesznek benne, az ösztönözheti az embert, hogy ő is kitartóbb legyen. Ehhez kapcsolódhatnak különféle motivációs taktikák, mint például haladási grafikonok, ranglisták, vagy gamification-elemek (jelvények, célkitűzések, stb.).
+
+Illetve a jövőben érdemes lehet olyan funkciókat is beépíteni, mint például a csoportos üzenetküldés és kommentelés, és automatikus értesítések a tagoknak a határidőkről, befizetésekről.
+
+Ez a modul nemcsak a közösségi élményt erősítené, hanem a felhasználók aktivitását és elköteleződését is jelentősen növelhetné.
+
 \section{UI}
-A felhasználói élmény szempontjából kiemelten fontos, hogy egy alkalmazás felülete átlátható, letisztult és esztétikus legyen. A modern webes elvárások világában a vanilla HTML, CSS és JavaScript (még Bootstrap-tel kiegészítve is) már nem feltétlenül elegendő ahhoz, hogy igazán igényes, vizuálisan is kiemelkedő felhasználói felületet hozzunk létre. Emellett például egy React vagy más frontend keretrendszer alkalmazása nemcsak látványosabb UI-t tesz lehetővé, de strukturáltabb, könnyebben karbantartható kódot is eredményez. Ezért érdemes lehet a felhasználói felületet egy modern frameworkben újraalkotni.
+A felhasználói élmény szempontjából kiemelten fontos, hogy egy alkalmazás átlátható, letisztult és esztétikus legyen. A modern webes elvárások világában a vanilla HTML, CSS és JavaScript (még Bootstrap-tel kiegészítve is) már nem feltétlenül elegendő ahhoz, hogy igazán igényes, vizuálisan is kiemelkedő felhasználói felületet hozzunk létre. Emellett például egy React vagy más frontend keretrendszer alkalmazása nemcsak látványosabb UI-t tesz lehetővé, de strukturáltabb, könnyebben karbantartható kódot is eredményez. Ezért érdemes lehet a felhasználói felületet (UI\footnote{UI = User Interface (felhasználói felület)}) egy modern frameworkben újraalkotni.
