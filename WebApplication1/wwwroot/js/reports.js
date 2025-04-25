@@ -1,7 +1,10 @@
 ﻿document.addEventListener("DOMContentLoaded", async function () {
     // draw charts
     updateChart();
-    updateMonthlySpendingChart("");
+    var currentYear = new Date().getFullYear().toString();
+    console.log("current year", currentYear);
+    let monthlySpendingChart = null;
+    var chart = updateMonthlySpendingChart(currentYear);
 
     // populate year selection
     const selectElement = document.getElementById('monthly-chart-select');
@@ -19,7 +22,6 @@
     select.addEventListener('change', function () {
         console.log("changed");
         const year = this.value;
-        console.log(year);
         updateMonthlySpendingChart(year);
     });
 
@@ -63,7 +65,114 @@
             window.URL.revokeObjectURL(url);
             console.log(`Downloading: ${filename}`);
         });
+    async function updateMonthlySpendingChart(yearString) {
+        var year = parseInt(yearString);
+        const userId = document.getElementById("current-user-id").value;
 
+        const diagramTitle = document.getElementById("finances-sum-month-area-chart-title");
+        if (year) {
+            diagramTitle.textContent = "Monthly Income vs Expense - " + year;
+        } else {
+            diagramTitle.textContent = "Monthly Income vs Expense";
+        }
+
+        const incomeTransactions = await fetchTransactions(userId, 1); // income
+        const expenseTransactions = await fetchTransactions(userId, 2); // expense
+
+        const months = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+        const monthlySum = (transactions) => {
+            const sums = Array(12).fill(0);
+            transactions.forEach(tx => {
+                const date = new Date(tx.date);
+                if (date.getFullYear() === year) {
+                    const month = date.getMonth();
+                    sums[month] += parseFloat(tx.amount);
+                }
+            });
+            return sums;
+        };
+
+        const incomeData = monthlySum(incomeTransactions);
+        const expenseData = monthlySum(expenseTransactions);
+
+        const ctx = document.getElementById("finances-sum-month-area-chart");
+
+        // Destroy old chart if exists
+        if (monthlySpendingChart) {
+            monthlySpendingChart.destroy();
+        }
+
+        // Create new chart
+        monthlySpendingChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: "Income",
+                        backgroundColor: "rgba(78, 223, 115, 0.7)",
+                        borderColor: "rgba(78, 223, 115, 1)",
+                        borderWidth: 1,
+                        data: incomeData
+                    },
+                    {
+                        label: "Expense",
+                        backgroundColor: "rgba(223, 78, 78, 0.7)",
+                        borderColor: "rgba(223, 78, 78, 1)",
+                        borderWidth: 1,
+                        data: expenseData
+                    }
+                ]
+            },
+            options: {
+                maintainAspectRatio: false,
+                scales: {
+                    xAxes: [{
+                        stacked: false,
+                        scaleLabel: {
+                            display: true,
+                            labelString: "Month",
+                            fontSize: 12,
+                            fontStyle: "bold"
+                        },
+                        gridLines: {
+                            display: false
+                        }
+                    }],
+                    yAxes: [{
+                        stacked: false,
+                        ticks: {
+                            callback: function (value) {
+                                return 'Ft' + number_format(value);
+                            }
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: "Amount (Ft)",
+                            fontSize: 12,
+                            fontStyle: "bold"
+                        },
+                        gridLines: {
+                            color: "rgb(234, 236, 244)",
+                            zeroLineColor: "rgb(234, 236, 244)",
+                            drawBorder: false,
+                            borderDash: [2],
+                            zeroLineBorderDash: [2]
+                        }
+                    }]
+                },
+                legend: {
+                    display: true
+                }
+            }
+        });
+
+        return monthlySpendingChart;
+    }
 
 });
 
@@ -229,103 +338,6 @@ async function updateChart() {
                         return datasetLabel + ': Ft' + number_format(tooltipItem.yLabel);
                     }
                 }
-            }
-        }
-    });
-}
-
-async function updateMonthlySpendingChart(yearString) {
-    var year = parseInt(yearString);
-    const userId = document.getElementById("current-user-id").value;
-
-    const diagramTitle = document.getElementById("finances-sum-month-area-chart-title");
-    diagramTitle.textContent = "Monthly Income vs Expense - " + year;
-
-    const incomeTransactions = await fetchTransactions(userId, 1); // 1 - income
-    const expenseTransactions = await fetchTransactions(userId, 2); // 2 - expense
-
-    const months = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ];
-
-    const monthlySum = (transactions) => {
-        const sums = Array(12).fill(0);
-        transactions.forEach(tx => {
-            const date = new Date(tx.date);
-            if (date.getFullYear() === year) {
-                const month = date.getMonth();
-                sums[month] += parseFloat(tx.amount);
-            }
-        });
-        return sums;
-    };
-
-    const incomeData = monthlySum(incomeTransactions);
-    const expenseData = monthlySum(expenseTransactions);
-
-    const ctx = document.getElementById("finances-sum-month-area-chart");
-    const chart1 = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: months,
-            datasets: [
-                {
-                    label: "Income",
-                    backgroundColor: "rgba(78, 223, 115, 0.7)",
-                    borderColor: "rgba(78, 223, 115, 1)",
-                    borderWidth: 1,
-                    data: incomeData
-                },
-                {
-                    label: "Expense",
-                    backgroundColor: "rgba(223, 78, 78, 0.7)",
-                    borderColor: "rgba(223, 78, 78, 1)",
-                    borderWidth: 1,
-                    data: expenseData
-                }
-            ]
-        },
-        options: {
-            maintainAspectRatio: false,
-            scales: {
-                xAxes: [{
-                    stacked: false,
-                    scaleLabel: {
-                        display: true,
-                        labelString: "Month",
-                        fontSize: 12,
-                        fontStyle: "bold"
-                    },
-                    gridLines: {
-                        display: false
-                    }
-                }],
-                yAxes: [{
-                    stacked: false,
-                    ticks: {
-                        callback: function (value) {
-                            return 'Ft' + number_format(value);
-                        }
-                    },
-                    scaleLabel: {
-                        display: true,
-                        labelString: "Amount (Ft)",
-                        fontSize: 12,
-                        fontStyle: "bold"
-                    },
-                    gridLines: {
-                        color: "rgb(234, 236, 244)",
-                        zeroLineColor: "rgb(234, 236, 244)",
-                        drawBorder: false,
-                        borderDash: [2],
-                        zeroLineBorderDash: [2]
-                    }
-                }]
-            },
-          
-            legend: {
-                display: true
             }
         }
     });
