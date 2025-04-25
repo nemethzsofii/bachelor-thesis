@@ -97,7 +97,7 @@ namespace WebApplication1.Utils
                                 header.Cell().Text("Date").Bold();
                                 header.Cell().Text("Type").Bold();
                                 header.Cell().Text("Category").Bold();
-                                header.Cell().Text("Amount").Bold().AlignRight();
+                                header.Cell().Text("Amount").Bold();
                                 header.Cell().Text("Description").Bold();
                             });
 
@@ -106,7 +106,7 @@ namespace WebApplication1.Utils
                                 table.Cell().Text(t.Date.ToString("yyyy-MM-dd"));
                                 table.Cell().Text(t.TypeId.ToString());
                                 table.Cell().Text(t.CategoryId?.ToString() ?? "-");
-                                table.Cell().Text($"{t.Amount:N0} Ft").AlignRight().FontColor(t.TypeId == 2 ? Colors.Red.Darken2 : Colors.Green.Darken2);
+                                table.Cell().Text($"{t.Amount:N0} Ft").FontColor(t.TypeId == 2 ? Colors.Red.Darken2 : Colors.Green.Darken2);
                                 table.Cell().Text(t.Description ?? "-");
                             }
                         });
