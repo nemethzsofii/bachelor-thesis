@@ -48,6 +48,23 @@
                     ],
                     borderWidth: 1
                 }]
+            },
+            options: {
+                plugins: {
+                    tooltip: {
+                        enabled: true,
+                        callbacks: {
+                            label: function (context) {
+                                const label = context.label ?? '';
+                                const value = context.raw ?? 0;
+                                return `${label}: ${value.toLocaleString('hu-HU')} Ft`;
+                            }
+                        }
+                    },
+                    legend: {
+                        display: true
+                    }
+                }
             }
         });
     }

@@ -21,5 +21,16 @@ namespace WebApplication1.Model
         public DateTime Date { get; set; } = DateTime.Now;
         public string? Description { get; set; }
         public int? GroupId { get; set; }
+
+        public Transaction(int userId, decimal amount, int typeId, int? categoryId, DateTime date, string description, int? groupId)
+        {
+            UserId = userId;
+            Amount = amount;
+            TypeId = typeId;
+            CategoryId = categoryId;
+            Date = date;
+            Description = description;
+            GroupId = groupId;
+        }
     }
 }

@@ -11,36 +11,38 @@
             <div class="card-header py-3">
                 <h6 class="m-0 font-weight-bold text-primary">Create Group</h6>
             </div>
-            <div class="card-body">
+            <div class="card-body" style="display: flex">
+                <div>
+                    <p>
+                        You can create a new group here! Groups are great for organizing the finances of a household or spouses.
+                    </p>
+
+                    <form method="POST" id="create-group-form" class="p-4 rounded shadow-sm bg-light" style="max-width: 600px; margin: auto;">
+                        <h3 class="mb-4 text-center text-primary">Create a New Group</h3>
+
+                        <div class="mb-3">
+                            <label for="group-name-input" class="form-label">Group Name</label>
+                            <input type="text" class="form-control" id="group-name-input" name="group-name-input" placeholder="e.g. MyHousehold" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="group-type-input" class="form-label">Group Type</label>
+                            <input type="text" class="form-control" id="group-type-input" name="group-type-input" placeholder="e.g. Household">
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="group-desc-input" class="form-label">Description</label>
+                            <textarea class="form-control" id="group-desc-input" name="group-desc-input" rows="3" placeholder="e.g. Here we can organize our finances for the whole family!"></textarea>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Create Group</button>
+                        </div>
+                    </form>
+                </div>
                 <div class="text-center">
                     <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;" src="~/img/undraw_online-collaboration.svg" alt="Animation of two people collaborating in front of a computer screen">
                 </div>
-                <p>
-                    You can create a new group here! Groups are great for organizing the finances of a household or spouses.
-                </p>
-                
-                <form method="POST" id="create-group-form" class="p-4 rounded shadow-sm bg-light" style="max-width: 600px; margin: auto;">
-                    <h3 class="mb-4 text-center text-primary">Create a New Group</h3>
-
-                    <div class="mb-3">
-                        <label for="group-name-input" class="form-label">Group Name</label>
-                        <input type="text" class="form-control" id="group-name-input" name="group-name-input" placeholder="e.g. MyHousehold" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="group-type-input" class="form-label">Group Type</label>
-                        <input type="text" class="form-control" id="group-type-input" name="group-type-input" placeholder="e.g. Household">
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="group-desc-input" class="form-label">Description</label>
-                        <textarea class="form-control" id="group-desc-input" name="group-desc-input" rows="3" placeholder="e.g. Here we can organize our finances for the whole family!"></textarea>
-                    </div>
-
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Create Group</button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>

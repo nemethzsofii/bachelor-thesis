@@ -18,7 +18,9 @@
         header.classList.add("bg-success", "text-white");
     } else if (lowerTitle === "error") {
         header.classList.add("bg-danger", "text-white");
-    } else {
+    } else if (lowerTitle == "warning") {
+        header.classList.add("bg-warning", "text-white");
+    }else {
         header.classList.add("bg-primary", "text-white");
     }
 

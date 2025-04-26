@@ -9,6 +9,9 @@ using WebApplication1.Utils;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
+using System.Diagnostics;
+using System.Globalization;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -47,6 +50,98 @@ public class TransactionController : ControllerBase
         await _context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetTransaction), new { id = transaction.Id }, transaction);
+    }
+
+    // 🔹 POST: api/Transaction/csv (Create new transactions by uploading a csv file)
+    [HttpPost("csv")]
+    public async Task<IActionResult> UploadCsvTransactions([FromForm] IFormFile file)
+    {
+        int currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest("No file uploaded");
+        }
+        if (Path.GetExtension(file.FileName).ToLower() != ".csv")
+        {
+            return BadRequest("File type is not .csv");
+        }
+
+        using var reader = new StreamReader(file.OpenReadStream());
+        var lineNumber = 0;
+
+        while (!reader.EndOfStream)
+        {
+            var line = await reader.ReadLineAsync();
+            lineNumber++;
+
+            if (string.IsNullOrWhiteSpace(line)) continue;
+            var parts = new string[10000];
+            try
+            {
+                parts = line.Split(',');
+            }catch(Exception)
+            {
+                try
+                {
+                    parts = line.Split(';');
+                }catch(Exception)
+                {
+                    return BadRequest("Fields need to be separated by either ',' or ';'.");
+                }
+            }
+            
+
+            if (parts.Length != 5)
+            {
+                return BadRequest($"Line {lineNumber} is invalid.");
+            }
+            // validate type
+            var typeIsInt = int.TryParse(parts[0].Trim(), out int type);
+            if(type != 1 && type != 2)
+            {
+                return BadRequest("Type can only be 1 or 2");
+            }
+            // validate category
+            var category = parts[1].Trim();
+            int? categoryId = null;
+            Category? categoryInDB = _context.Categories.FirstOrDefault(c => c.Name == category);
+            if (categoryInDB is not null)
+            {
+                categoryId = categoryInDB.Id;
+            }
+            // desc doesnt rlly need validation
+            var description = parts[2].Trim();
+            // validate amount
+            bool amountIsInt = int.TryParse(parts[3].Trim(), out int amount);
+            if(amount < 0 || !amountIsInt)
+            {
+                return BadRequest("Amount needs to be a positive integer");
+            }
+            // validate date
+            var dateFromForm = parts[4].Trim();
+            if(DateTime.TryParseExact(dateFromForm, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+            {
+                date = date.Date.AddHours(12);
+            }
+            else
+            {
+                return BadRequest("Date format invalid!");
+            }
+            try
+            {
+                _context.Transactions.Add(new Transaction(currentUserId, amount, type, categoryId, date, description, groupId: null));
+                await _context.SaveChangesAsync();
+
+            } catch (Exception e)
+            {
+                Debug.WriteLine(e);
+                return BadRequest("Something went wrong!");
+            }
+            
+        }
+
+        return Ok("Data saved successfully");
     }
 
     // 🔹 PUT: api/Transaction/{id} (Update a transaction)

@@ -1,4 +1,5 @@
-﻿document.addEventListener("DOMContentLoaded", function () {
+﻿document.addEventListener("DOMContentLoaded", async function () {
+    var remaining = null;
     try {
         var currentUserId = parseInt(document.getElementById("current-user-id").value, 10);
     } catch (err){
@@ -10,7 +11,7 @@
         $('#basic-modal').modal('hide');
     });
 
-    document.body.addEventListener("click", function (event) {
+    document.body.addEventListener("click", async function (event) {
 
         console.log("something clicked1");
         // Don't ruin MODAL behaviour
@@ -70,6 +71,7 @@
             } else {
                 // case: PERSONAL TRANSACTION
                 var groupId = null;
+                remaining = await getRemainingMonthlySpending();
             }
 
             if (container.classList.contains("income-card")) {
@@ -102,7 +104,8 @@
             typeId: typeId,
             categoryId: categoryId,
             description: description,
-            groupId: groupId
+            groupId: groupId,
+            date: new Date().toISOString()
         };
 
         console.log(transactionData);
@@ -119,15 +122,55 @@
             if (!response.ok) {
                 throw new Error(`Error: ${response.status} - ${response.statusText}`);
             } else {
-                displayBasicModal("Transaction created successfully!", "success");
+                console.log(typeId);
+                if (remaining != null && typeId == 2) {
+                    remaining = await getRemainingMonthlySpending();
+                    
+                    if (remaining < 0) {
+                        const formatted = (-remaining).toLocaleString('hu-HU');
+                        displayBasicModal(`Monthly limit overstepped by ${formatted} Ft! `, "warning");
+                    } else {
+                        const formatted = remaining.toLocaleString('hu-HU');
+                        displayBasicModal(`Transaction created! Remaining monthly limit: ${formatted} Ft! `, "success");
+                    }
+                } else {
+                    displayBasicModal("Transaction created successfully! ", "success");
+                }
             }
 
             var result = await response.json();
+
             console.log("Transaction created successfully:", result);
         } catch (error) {
             console.error("Failed to create transaction:", error);
             displayBasicModal("Failed to create transaction!", "error");
         }
+    }
+
+    async function getRemainingMonthlySpending(){
+        const limit = await getMonthlySpendingLimit(currentUserId);
+        if (limit == 0) {
+            return null;
+        }
+
+        const allExpenses = await listAllTransactions(currentUserId, 2); // 2 - expense
+
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+
+        const currentMonthExpenses = allExpenses.filter(tx => {
+            const txDate = new Date(tx.date);
+            return txDate.getMonth() === currentMonth && txDate.getFullYear() === currentYear;
+        });
+
+        const totalSpent = currentMonthExpenses.reduce((sum, tx) => {
+            return sum + parseFloat(tx.amount || 0);
+        }, 0);
+
+        const remaining = limit - totalSpent;
+
+        return remaining; 
     }
 
     

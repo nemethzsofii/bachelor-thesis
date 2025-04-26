@@ -18,7 +18,10 @@
             <a class="nav-link active" id="transactions-tab" data-toggle="tab" href="#trans-content" role="tab" aria-controls="trans-content" aria-selected="true">Transactions</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" id="spendings-tab" data-toggle="tab" href="#spend-content" role="tab" aria-controls="spend-content" aria-selected="false">Spendings</a>
+            <a class="nav-link" id="batch-tab" data-toggle="tab" href="#batch-content" role="tab" aria-controls="batch-content" aria-selected="false">Batch Upload</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="spendings-tab" data-toggle="tab" href="#spend-content" role="tab" aria-controls="spend-content" aria-selected="false">Spending Limit</a>
         </li>
     </ul>
 
@@ -142,7 +145,31 @@
             </div>
         </div>
 
-        <!-- Spendings Tab -->
+        <!-- Batch Upload Tab -->
+        <div class="tab-pane fade" id="batch-content" role="tabpanel" aria-labelledby="batch-tab" style="padding: 15px">
+            <div class="row justify-content-center">
+                <div class="col-md-7">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Upload Data (CSV)</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>Upload a CSV file with the following row format:</p>
+                            <ul class="mb-3">
+                                <li>[type (1 = income, 2 = expense), category (or "-" if none), description, amount (positive integer), date (YYYY-MM-DD)]</li>
+                                <li>Example: <code>[2, family, dinner with parents, 10500, 2024-10-23]</code></li>
+                            </ul>
+                            <form id="csv-upload-form" style="display: flex; flex-direction: column; gap: 10px;">
+                                <input type="file" id="csv-file" class="form-control" accept=".csv" required>
+                                <button type="submit" id="upload-csv" class="btn btn-primary" style="width: 20%;">Upload</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Spending Limits Tab -->
         <div class="tab-pane fade" id="spend-content" role="tabpanel" aria-labelledby="spendings-tab" style="padding: 15px">
             <div class="row">
                 <div class="col">
@@ -209,27 +236,45 @@
             }catch(err){
                 console.log(err);
             }
-            
 
-			var table = new DataTable('#finance-table', {
-			  columns: [
-				{ title: "Type" },
-				{ title: "Category" },
-				{ title: "Description" },
-				{
-				  title: "Amount",
-				  className: "text-end",
-				  render: function (data, type, row) {
-					const num = Number(data);
-					if (type === 'display' || type === 'filter') {
-					  return `${num.toLocaleString('hu-HU')} Ft`;
-					}
-					return num;
-				  }
-				},
-				{ title: "Date" }
-			  ]
-			});
+
+                var table = new DataTable('#finance-table', {
+                  columnDefs: [
+                    {
+                      targets: 0, // hide the first (id) column from the user
+                      visible: false,
+                      searchable: false
+                    }
+                  ],
+                  columns: [
+                    { title: "Id" },
+                    { title: "Type" },
+                    { title: "Category" },
+                    { title: "Description" },
+                    {
+                      title: "Amount",
+                      className: "text-end",
+                      render: function (data, type, row) {
+                        const num = Number(data);
+                        if (type === 'display' || type === 'filter') {
+                          return `${num.toLocaleString('hu-HU')} Ft`;
+                        }
+                        return num;
+                      }
+                    },
+                    { title: "Date" },
+                    {
+                        title: "Delete",
+                        orderable: false,
+                        searchable: false,
+                        className: "text-center",
+                        render: function (data, type, row, meta) {
+                        return `<button class="btn btn-sm btn-danger delete-btn">🗑</button>`;
+                        }
+                    }
+
+                  ]
+                });
 
 			async function createHistoryTable(divId){
 				var result = await listAllTransactions(currentUserId);
@@ -245,35 +290,98 @@
 						console.log("tbody found");
 					}
 					for(let i = 0; i < result.length; i ++){
-						console.log("Creating element;");
 
 					const typeId = result[i].typeId;
 					const isExpense = typeId == 2;
 					
 					if(result[i].categoryId != null){
 						var res = await getCategoryById(result[i].categoryId);
-						console.log(res);
 						var categoryName = res.name.toLowerCase();
 					}else{
 						var categoryName = "-";
 					}
 					
 					const rowNode = table.row.add([
+                        result[i].id,
 						`${isExpense ? '⬇️ expense' : '⬆️ income'}`,
 						`${categoryName}`,
 						`${result[i].description}`,
 						`${result[i].amount}`,
 						`${result[i].date}`
 					]).draw(false).node();
-
-					//$(rowNode).css('background-color', isExpense ? '#ffe5e5' : '#e5ffe5');
-					$(rowNode).css('color', isExpense ? '#a10000' : '#007f00');
-
 					}
 			}
 
 
 			// MAIN
 			createHistoryTable("finance-table");
+
+            // handle transactions deletion
+            $('#finance-table tbody').on('click', '.delete-btn', function () {
+                const row = table.row($(this).closest('tr'));
+                const data = row.data();
+                const id = data[0]; // the first col: hidden id
+
+                fetch(`/api/Transaction/${id}`, {
+                method: 'DELETE'
+                })
+                .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to delete entry");
+                }
+                row.remove().draw(false);
+                })
+                .catch(error => {
+                displayBasicModak("Error deleting entry!", "error");
+                });
+            });
+
+            document.getElementById("csv-upload-form").addEventListener("submit", async function (e) {
+                e.preventDefault();
+
+                const fileInput = document.getElementById("csv-file");
+                const uploadButton = document.getElementById("upload-csv");
+                const file = fileInput.files[0];
+
+                if (!file) {
+                    displayModal("Please select a file.", "error");
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append("file", file);
+
+                const originalButtonText = uploadButton.innerHTML;
+
+                try {
+                    uploadButton.disabled = true;
+                    uploadButton.innerHTML = `
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Uploading...
+                    `;
+
+                    const response = await fetch("/api/Transaction/csv", {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        displayBasicModal("Transactions saved!", "success");
+                    } else {
+                        const errorMessage = await response.text();
+                        if(errorMessage.length > 300){
+                            displayBasicModal("An unexpected error occurred!", "error");
+                        }else{
+                            displayBasicModal(errorMessage, "error");
+                        }
+                        
+                    }
+                } catch (error) {
+                    displayBasicModal("An unexpected error occurred: " + error.message, "error");
+                } finally {
+                    uploadButton.disabled = false;
+                    uploadButton.innerHTML = originalButtonText;
+                }
+            });
+
 	});
 </script>

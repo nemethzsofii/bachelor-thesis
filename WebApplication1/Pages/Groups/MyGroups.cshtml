@@ -156,6 +156,25 @@
 				}
 			}
 		});
+		// handlle group transaction deletion
+		$('#finance-table tbody').on('click', '.delete-btn', function () {
+			const row = table.row($(this).closest('tr'));
+			const data = row.data();
+			const id = data[0]; // the first col: hidden id
+
+			fetch(`/api/Transaction/${id}`, {
+			method: 'DELETE'
+			})
+			.then(response => {
+			if (!response.ok) {
+				throw new Error("Failed to delete entry");
+			}
+			row.remove().draw(false);
+			})
+			.catch(error => {
+			displayBasicModak("Error deleting entry!", "error");
+			});
+		});
 
 		})();
 
@@ -235,7 +254,15 @@
 
 		async function createHistoryTable(groupId){
 			var table = new DataTable(`#finance-table-${groupId}`, {
+				columnDefs: [
+					{
+					  targets: 0, // hide the first (id) column from the user
+					  visible: false,
+					  searchable: false
+					}
+				],
 				columns: [
+				{ title: "Id" },
 				{ title: "User" },
 				{ title: "Type" },
 				{ title: "Category" },
@@ -251,7 +278,16 @@
 					return num;
 					}
 				},
-				{ title: "Date" }
+				{ title: "Date" },
+				{
+					title: "Delete",
+					orderable: false,
+					searchable: false,
+					className: "text-center",
+					render: function (data, type, row, meta) {
+					return `<button class="btn btn-sm btn-danger delete-btn">🗑</button>`;
+					}
+				}
 				]
 			});
 
@@ -289,6 +325,7 @@
 				
 				console.log(table);
 				const rowNode = table.row.add([
+					result[i].id,
 					`${fullName}`,
 					`${isExpense ? '⬇️ expense' : '⬆️ income'}`,
 					`${categoryName}`,
@@ -298,7 +335,7 @@
 				]).draw(false).node();
 				console.log("Added node");
 				//$(rowNode).css('background-color', isExpense ? '#ffe5e5' : '#e5ffe5');
-				$(rowNode).css('color', isExpense ? '#a10000' : '#007f00');
+				//$(rowNode).css('color', isExpense ? '#a10000' : '#007f00');
 
 			}
 		}
@@ -554,31 +591,33 @@
 														</div>
 
 														<div class="card-body bg-white rounded-bottom-4">
-															<table id="finance-table-${group.id}" class="table table-hover align-middle">
-																<thead class="table-primary">
-																	<tr>
-																		<th>User</th>
-																		<th>Type</th>
-																		<th>Category</th>
-																		<th>Description</th>
-																		<th>Amount</th>
-																		<th>Date</th>
-																	</tr>
-																</thead>
-																<tbody id="tbody">
-																	<!-- Dynamic rows go here -->
-																</tbody>
-																<tfoot class="table-light">
-																	<tr>
-																		<th>User</th>
-																		<th>Type</th>
-																		<th>Category</th>
-																		<th>Description</th>
-																		<th>Amount</th>
-																		<th>Date</th>
-																	</tr>
-																</tfoot>
-															</table>
+															<div class="table-responsive">
+																<table id="finance-table-${group.id}" class="table table-hover align-middle">
+																	<thead class="table-primary">
+																		<tr>
+																			<th>User</th>
+																			<th>Type</th>
+																			<th>Category</th>
+																			<th>Description</th>
+																			<th>Amount</th>
+																			<th>Date</th>
+																		</tr>
+																	</thead>
+																	<tbody id="tbody">
+																		<!-- Dynamic rows go here -->
+																	</tbody>
+																	<tfoot class="table-light">
+																		<tr>
+																			<th>User</th>
+																			<th>Type</th>
+																			<th>Category</th>
+																			<th>Description</th>
+																			<th>Amount</th>
+																			<th>Date</th>
+																		</tr>
+																	</tfoot>
+																</table>
+															</div>
 														</div>
 													</div>
 												</div>

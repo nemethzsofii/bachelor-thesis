@@ -160,7 +160,7 @@
                 : '';
 
             let deadlineText = data.deadline !== null
-                ? `<p class="card-text"><strong>Deadline:</strong> ${data.deadline}</p>`
+                ? `<p class="card-text"><strong>Deadline:</strong> ${data.deadline.split('T')[0]}</p>`
                 : '';
 
             container.innerHTML += `
