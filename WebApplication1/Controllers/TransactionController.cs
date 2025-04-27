@@ -45,6 +45,7 @@ public class TransactionController : ControllerBase
     public async Task<ActionResult<Transaction>> CreateTransaction([FromBody] Transaction transaction)
     {
         if (transaction == null) return BadRequest("Invalid transaction data");
+        if (transaction.Amount < 0) return BadRequest("Amount has to be a positive integer!");
 
         _context.Transactions.Add(transaction);
         await _context.SaveChangesAsync();
@@ -131,7 +132,6 @@ public class TransactionController : ControllerBase
             try
             {
                 _context.Transactions.Add(new Transaction(currentUserId, amount, type, categoryId, date, description, groupId: null));
-                await _context.SaveChangesAsync();
 
             } catch (Exception e)
             {
@@ -140,7 +140,7 @@ public class TransactionController : ControllerBase
             }
             
         }
-
+        await _context.SaveChangesAsync();
         return Ok("Data saved successfully");
     }
 

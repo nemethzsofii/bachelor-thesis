@@ -9,6 +9,7 @@ using WebApplication1.Data;
 using WebApplication1.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using WebApplication1.Model;
+using WebApplication1.Utils;
 
 namespace WebApplication1.Pages.Account
 {
@@ -37,42 +38,34 @@ namespace WebApplication1.Pages.Account
             if (!ModelState.IsValid)
                 return Page();
 
-            string generatedSalt = GenerateSalt();
-            string hashedPassword = HashPassword(RegisterData.Password, generatedSalt);
+            string generatedSalt = UtilFunctions.GenerateSalt();
+            string hashedPassword = UtilFunctions.HashPassword(RegisterData.Password, generatedSalt);
 
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == RegisterData.Username);
             if (existingUser != null)
             {
                 ErrorMessage = "Username already taken. Please choose another.";
                 return Page();
+            }else if (!UtilFunctions.ValidatePasswordStrength(RegisterData.Password))
+            {
+                ErrorMessage = "Password must be at least 8 characters and include a lowercase letter, an uppercase letter, a digit, and a special character";
+                return Page();
             }
 
-            var newUser = new User
-            {
-                Username = RegisterData.Username,
-                Email = RegisterData.Email,
-                Fullname = RegisterData.Fullname,
-                PasswordHash = hashedPassword,
-                Salt = generatedSalt
-            };
+                var newUser = new User
+                {
+                    Username = RegisterData.Username,
+                    Email = RegisterData.Email,
+                    Fullname = RegisterData.Fullname,
+                    PasswordHash = hashedPassword,
+                    Salt = generatedSalt
+                };
 
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Registration successful! Please log in.";
             return RedirectToPage("/Account/Login");
-        }
-
-        public static string GenerateSalt()
-        {
-            byte[] saltBytes = RandomNumberGenerator.GetBytes(16);
-            return Convert.ToBase64String(saltBytes);
-        }
-        public static string HashPassword(string password, string salt)
-        {
-            using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(salt));
-            byte[] hashBytes = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(hashBytes);
         }
     }
 }

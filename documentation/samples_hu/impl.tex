@@ -21,7 +21,7 @@
 \end{figure}
 
 \subsection{Architektúra leírása}
-A .NET-es integrált frontend és backend fejlesztés hatalmas előnye a rendszerezettség, a szabályszerű kommunikáció az egyes rétegek között (illetve ezen rétegek helyes elkülönölése), és a rengeteg beépített segédfüggvény/konfiguráció/cshtml tag. Kiemelném még a modellek használatát is, amelyek egyszerűbb és biztonságosabb (például SQL injection elleni védelem) adatbázis kezelést biztosítanak.
+Ahogy a \ref{fig:project-structure}. ábrán is látható, az egész webalkalmazás egy projekten belül lett kialakítva. A .NET-es integrált frontend és backend fejlesztés hatalmas előnye a rendszerezettség, a szabályszerű kommunikáció az egyes rétegek között (illetve ezen rétegek helyes elkülönölése), és a rengeteg beépített segédfüggvény/konfiguráció/cshtml tag. Kiemelném még a modellek használatát is, amelyek egyszerűbb és biztonságosabb (például SQL injection elleni védelem) adatbázis kezelést biztosítanak.
 
 Az egyes route-ok konfigurálása is meglehetősen letisztult ebben a keretrendszerben. A "Pages" mappa\footnote{A "Pages" mappa, ahogy a neve is mutatja, tartalmazza a weboldal egyes oldalait. Bővebb kifejtés a Frontend című fejezetben.} fájlstruktúrája alapján automatikusan létrejönnek a route-ok, ha a "Program.cs"-ben megadjuk a programnak, hogy hozza létre őket:
 
@@ -46,7 +46,7 @@ be akarunk küldeni a szervernek, ezt JS (JavaScript) kód írása nélkül bizt
 
 \section{Backend}
 
-Először is nézzük meg az alkalmazás egyes backendet felépítő elemeit, és azok funkcionalitását, kezelését.
+A következő fejezetben az alkalmazás backend architektúráját mutatom be, kifejtve az egyes elemek funkcióit és használatát.
 
 \subsection{appsettings.json}
 
@@ -56,23 +56,20 @@ adatbáziskapcsolati stringeket,
 API kulcsokat,
 logolási beállításokat,
 vagy bármilyen egyedi, fejlesztő által definiált értéket.
-Az értékeket a program könnyen kiolvassa a beépített konfigurációs
-rendszer segítségével (pl. Configuration["Kulcs"] vagy
-erősen típusos binding-gel). Ez segít elkülöníteni a kódot a
-konfigurációtól, így könnyebb a karbantartás, környezetenkénti
-eltérés kezelése (pl. fejlesztői vs. éles környezet).
+Az értékeket a program bármely részén könnyen ki lehet olvasni (szótár szintaktika használatával)  (pl. Configuration["Kulcs"]). Ez segít elkülöníteni a kódot a
+konfigurációtól, így könnyebb a karbantartás, és egyszerűen kezelhető a környezetenkénti
+eltérés (pl. fejlesztői vs. éles környezet).
 
 \subsection{Program.cs}
-Ez a fő program fájl. Ebben készítjük
-elő a webalkalmazásunk tulajdonságait (persze a C\# egyszerűségének
+Ez a fő program fájl, és egyben az alkalmazás belépési pontja. Ebben készítjük
+elő a webalkalmazásunk tulajdonságait (persze a Razor Pages egyszerűségének
 hála ez nem sok plusz feladattal jár, csupán a helyes függvényeket
 kell meghívni helyes sorrendben, attól függően, hogy hogyan
-akarjuk konfigurálni az alkalmazást.) Itt lehet beállítani a
+akarjuk konfigurálni az alkalmazást). Itt lehet beállítani a
 korábban említett routing-ot, az autentikációt, a cookie-kat,
 a session-t, a fejlesztői és éles környezeteket, és még sok minden mást. Itt tudjuk felkonfigurálni a modellt, az adatbázist
 és az oldalakat (Pages) is. ezután az app.Run() függvény hívással
-tudjuk ténylegesen elindítani a weboldalt, és ekkor localhoston
-el is kezd futni.
+tudjuk ténylegesen elindítani a weboldalt.
 
 \subsection{Modellek}
 Minden adatbázis táblának létrehozunk egy modellt
@@ -93,8 +90,7 @@ meghívni, és ezáltal adatot közvetíteni a felhasználó és a szerver
 között (oda-vissza). Az API-endpointok tesztelésére és leírására
 egy hasznos, szintén beépített, megoldást használhatunk, a Swaggert.
 Ezt is a Program.cs fájlban állíthatjuk be.\footnote{Szigorúan csak 
-Development módban jelenjen meg, adatvédelmi/adat hitelességi okokból.}
-
+Development módban jelenjen meg, adatvédelmi/adat hitelességi okokból.} A Swagger az alkalmazás API-végpontjainak dokumentációja, amely lehetőséget biztosít az egyes végpontok közvetlen tesztelésére is.
 \section{Frontend}
 Térjünk át a frontend réteg alkotóelemeire, és ezek működésére. Itt is komponensenként fogom bemutatni a felhasznált technológiákat.
 
@@ -214,10 +210,508 @@ a tényleges adatbázisunkkal.
 \subsection{Migrations}
 A későbbi fejlesztések során migrációkat használhatunk az adatbázis verziókövetésére és a változtatások biztonságos, konzisztens bevezetésére. A migrációk használata Entity Framework Core segítségével történik, ahol a DbContext osztály definiálja az adatbázis szerkezetét. A módosításokat a dotnet ef migrations add paranccsal lehet rögzíteni, majd a dotnet ef database update parancs segítségével alkalmazni az adatbázisra. Ez lehetővé teszi a séma változásainak verziókövetését és biztonságos frissítését.
 
-
-
 \section{Tesztek}
----
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC001 \\ \hline
+		\textbf{Funkció} & Regisztráció \\ \hline
+		\textbf{Bemenet} & Valid e-mail cím, egyedi felhasználónév, teljes név, jelszó \\ \hline
+		\textbf{Elvárt eredmény} & Sikeres regisztráció, átirányítás a bejelentkezés felületre, visszajelző üzenet a felhasználónak \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek\\ \hline
+	\end{tabular}
+	\caption{Sikeres regisztráció}
+	\label{tab:manual_testcase_registration}
+\end{table}
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC002 \\ \hline
+		\textbf{Funkció} & Regisztráció \\ \hline
+		\textbf{Bemenet} & Üres mezők beküldése vagy invalid e-mail cím, vagy nem elég erős jelszó \\ \hline
+		\textbf{Elvárt eredmény} & Hibajelzés, regisztráció sikertelen \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Sikertelen regisztráció}
+	\label{tab:regisztracio_ures}
+\end{table}
 
-\section{UML diagramok}
----
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC003 \\ \hline
+		\textbf{Funkció} & Bejelentkezés \\ \hline
+		\textbf{Bemenet} & Helyes felhasználónév - jelszó páros megadása \\ \hline
+		\textbf{Elvárt eredmény} & Belépteti a felhasználót az oldalra \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Sikeres bejelentkezés}
+	\label{tab:bejelentkezes_hibas_adatokkal}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC004 \\ \hline
+		\textbf{Funkció} & Bejelentkezés \\ \hline
+		\textbf{Bemenet} & Üres mezők beküldése, vagy helytelen felhasználónév-jelszó páros \\ \hline
+		\textbf{Elvárt eredmény} & Hibajelzés, a bejelentkezés sikertelen\\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Sikertelen bejelentkezés}
+	\label{tab:bejelentkezes_ures}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC005 \\ \hline
+		\textbf{Funkció} & Profil oldal - adatok módosítása \\ \hline
+		\textbf{Bemenet} & Új, egyedi felhasználónév megadása VAGY új, valid e-mail cím megadása VAGY új teljes név megadása \\ \hline
+		\textbf{Elvárt eredmény} & Sikeres módosítás \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Személyes adatok sikeres módosítása}
+	\label{tab:profil_felhasznalonev_modositas}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC006 \\ \hline
+		\textbf{Funkció} & Profil oldal - adatok módosítása \\ \hline
+		\textbf{Bemenet} & Helytelen e-mail cím megadás, foglalt felhasználónév megadás, üres mező beküldése \\ \hline
+		\textbf{Elvárt eredmény} & Hibajelzés, a módosítás nem lép érvénybe \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Személyes adatok sikertelen módosítása}
+	\label{tab:profil_felhasznalonev_foglalt}
+\end{table}
+
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC007 \\ \hline
+		\textbf{Funkció} & Profil oldal - Jelszó módosítása \\ \hline
+		\textbf{Bemenet} & Helyes régi jelszó, új jelszó, új jelszó megerősítése egyezően, új jelsző elég erős \\ \hline
+		\textbf{Elvárt eredmény} & Sikeres jelszóváltás, visszajelzés a felhasználónak \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Sikeres jelszó modósítás}
+	\label{tab:profil_jelszo_modositas}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC008 \\ \hline
+		\textbf{Funkció} & Profil oldal - Jelszó módosítása \\ \hline
+		\textbf{Bemenet} & Helytelen régi jelszó, új jelszó és megerősítés nem egyező, nem elég erős új jelszó \\ \hline
+		\textbf{Elvárt eredmény} & Hibajelzés, módosítás nem lép érvénybe \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Sikertelen jelszó módosítás}
+	\label{tab:jelszo_modositas_rossz_regi}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC009 \\ \hline
+		\textbf{Funkció} & Új bevétel rögzítése \\ \hline
+		\textbf{Bemenet} & Helyes amount (pl. 5000) és description (pl. "Fizetés") \\ \hline
+		\textbf{Elvárt eredmény} & Sikeres mentés, üzenet: "Transaction saved!" \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Új bevétel helyes adatokkal}
+	\label{tab:uj_bevetel_helyes}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC010 \\ \hline
+		\textbf{Funkció} & Új bevétel rögzítése \\ \hline
+		\textbf{Bemenet} & Üres vagy hibás amount/description mezők \\ \hline
+		\textbf{Elvárt eredmény} & Hibajelzés: "Failed to create transaction!" (Tranzakció mentése sikertelen.) \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Új bevétel hibás adatokkal}
+	\label{tab:uj_bevetel_hibas}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC011 \\ \hline
+		\textbf{Funkció} & Kiadás rögzítése, ha havi limit = 0 \\ \hline
+		\textbf{Bemenet} & Új kiadás mentése 0 költési limit mellett \\ \hline
+		\textbf{Elvárt eredmény} & Üzenet: "Transaction saved!" (limit státusz nélkül) \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Kiadás rögzítése havi limit nélkül}
+	\label{tab:kiadas_limit_nelkul}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC012 \\ \hline
+		\textbf{Funkció} & Kiadás rögzítése, ha van havi limit \\ \hline
+		\textbf{Bemenet} & Új kiadás mentése havi limit mellett \\ \hline
+		\textbf{Elvárt eredmény} & Limit státusz megjelenik: zöld (ha van keret), sárga (ha túllépés történt) \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Kiadás rögzítése havi limittel}
+	\label{tab:kiadas_limit_ellenorzes}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC013 \\ \hline
+		\textbf{Funkció} & Előzmény táblázat ellenőrzése \\ \hline
+		\textbf{Bemenet} & Új bevétel/kiadás rögzítése \\ \hline
+		\textbf{Elvárt eredmény} & Az új tranzakció megjelenik az előzmények között \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Új tranzakció megjelenése az előzmények között}
+	\label{tab:elozmeny_tabla}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC014 \\ \hline
+		\textbf{Funkció} & CSV batch feltöltés \\ \hline
+		\textbf{Bemenet} & Helyes formátumú CSV fájl feltöltése (típus, kategória, leírás, összeg, dátum) \\ \hline
+		\textbf{Elvárt eredmény} & Minden sor külön tranzakcióként mentésre kerül, üzenet: "Transactions saved!" (Tranzakciók elmentve!) \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{CSV batch feltöltés helyes fájllal}
+	\label{tab:csv_feltoltes}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC015 \\ \hline
+		\textbf{Funkció} & CSV batch feltöltés \\ \hline
+		\textbf{Bemenet} & Helytelen formátumú CSV fájl feltöltése (típus, kategória, leírás, összeg, dátum) \\ \hline
+		\textbf{Elvárt eredmény} & Hibaüzenet: "Error! <<a pontos hiba>>" (Hiba!) \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{CSV batch feltöltés helytelen fájllal}
+	\label{tab:csv_feltoltes_helytelen}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC016 \\ \hline
+		\textbf{Funkció} & Havi költési limit módosítása \\ \hline
+		\textbf{Bemenet} & Új poitív egész költési limit megadása (pl. 100000) \\ \hline
+		\textbf{Elvárt eredmény} & Sikeres módosítás, limit frissítése az adatbázisban \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Sikeres havi költési limit módosítása}
+	\label{tab:havi_limit_modositas}
+\end{table}
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC017 \\ \hline
+		\textbf{Funkció} & Havi költési limit módosítása \\ \hline
+		\textbf{Bemenet} & Érvénytelen költési limit megadása (pl. negatív szám)\\ \hline
+		\textbf{Elvárt eredmény} & Sikertelen módosítás \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Sikertelen havi költési limit módosítása}
+	\label{tab:havi_limit_modositas_sikertelen}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC018 \\ \hline
+		\textbf{Funkció} & Új megtakarítás létrehozása helyes adatok megadásával \\ \hline
+		\textbf{Bemenet} & Név, leírás, célösszeg (opcionális), határidő megadása (opcionális) \\ \hline
+		\textbf{Elvárt eredmény} & Sikeres megtakarítás létrejötte a megadott adatokkal \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Új megtakarítás létrehozása}
+	\label{tab:megtakaritas}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC019 \\ \hline
+		\textbf{Funkció} & Összeg hozzáadása megtakarításhoz \\ \hline
+		\textbf{Bemenet} & Megtakarításhoz adott összeg megadása (pl. 10000) \\ \hline
+		\textbf{Elvárt eredmény} & Az összeg hozzáadódik a megtakarításhoz, frissül az aktuális összeg \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Összeg hozzáadása megtakarításhoz}
+	\label{tab:hozzaadas_megtakaritashoz}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC020 \\ \hline
+		\textbf{Funkció} & Összeg elvétele megtakarításból \\ \hline
+		\textbf{Bemenet} & Megtakarításból elvont összeg megadása (pl. 5000) \\ \hline
+		\textbf{Elvárt eredmény} & Az összeg levonásra kerül, frissül az aktuális összeg \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Összeg elvétele megtakarításból}
+	\label{tab:elvetel_megtakaritasbol}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC021 \\ \hline
+		\textbf{Funkció} & Megtakarítás törlése \\ \hline
+		\textbf{Bemenet} & Meglévő megtakarítás kártyán lévő kuka ikon megnyomása és a törlés megerősítése \\ \hline
+		\textbf{Elvárt eredmény} & A kiválasztott megtakarítás törlésre kerül \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Megtakarítás törlése}
+	\label{tab:megtakaritas_torles}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC022 \\ \hline
+		\textbf{Funkció} & Részletes riport letöltése \\ \hline
+		\textbf{Bemenet} & Letöltés gombra \\ \hline
+		\textbf{Elvárt eredmény} & A részletes riport fájl letöltésre kerül \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Részletes riport letöltése}
+	\label{tab:reszletes_riport_letoltes}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC023 \\ \hline
+		\textbf{Funkció} & Év váltása az éves összefoglaló riporton \\ \hline
+		\textbf{Bemenet} & Másik év kiválasztása az éves riport nézetben \\ \hline
+		\textbf{Elvárt eredmény} & Az adott évre vonatkozó adatok jelennek meg \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Év váltása éves összefoglaló riporton}
+	\label{tab:ev_valtasa_osszegzo_riport}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC024 \\ \hline
+		\textbf{Funkció} & Új csoport létrehozása \\ \hline
+		\textbf{Bemenet} & Csoportnév, típus, leírás megadása, létrehozás gomb megnyomása \\ \hline
+		\textbf{Elvárt eredmény} & A csoport sikeresen létrejön és megjelenik a listában \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Új csoport létrehozása}
+	\label{tab:csoport_letrehozas}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC025 \\ \hline
+		\textbf{Funkció} & Csoport törlése \\ \hline
+		\textbf{Bemenet} & Meglévő csoport törlésének megerősítése \\ \hline
+		\textbf{Elvárt eredmény} & A kiválasztott csoport törlésre kerül a listából \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Csoport törlése}
+	\label{tab:csoport_torles}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC026 \\ \hline
+		\textbf{Funkció} & Csoportban új tranzakció rögzítése \\ \hline
+		\textbf{Bemenet} & Összeg és leírás megadása \\ \hline
+		\textbf{Elvárt eredmény} & A tranzakció megjelenik a táblázatban a felhasználó nevével és helyes adatokkal \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Csoportban tranzakció rögzítése}
+	\label{tab:csoport_kiadas_rogzitese}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC027 \\ \hline
+		\textbf{Funkció} & Csoport elhagyása \\ \hline
+		\textbf{Bemenet} & Csoportból kilépés megerősítése \\ \hline
+		\textbf{Elvárt eredmény} & A felhasználó kikerül a csoportból \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Csoport elhagyása}
+	\label{tab:csoport_elhagyasa}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC028 \\ \hline
+		\textbf{Funkció} & Tag meghívása csoporthoz \\ \hline
+		\textbf{Bemenet} & Új tag felhasználónevének megadása, meghívó küldése \\ \hline
+		\textbf{Elvárt eredmény} & Meghívó elküldve\\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Tag meghívása csoporthoz - sikeres}
+	\label{tab:tag_hozzaadasa}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC029 \\ \hline
+		\textbf{Funkció} & Tag meghívása csoporthoz \\ \hline
+		\textbf{Bemenet} & Nem létező felhasználónév, üres mezők megadása \\ \hline
+		\textbf{Elvárt eredmény} & Hibajelzés, meghívó nem kerül küldésre\\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Tag meghívása csoporthoz - sikertelen}
+	\label{tab:tag_hozzaadasa_sikertelen}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC030 \\ \hline
+		\textbf{Funkció} & Meghívó elfogadása \\ \hline
+		\textbf{Bemenet} & Meghívó elfogadása az értesítések fülön \\ \hline
+		\textbf{Elvárt eredmény} & A felhasználó bekerül a csoportba \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Meghívó elfogadása}
+	\label{tab:meghivo_elfogadasa}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC031 \\ \hline
+		\textbf{Funkció} & Meghívó elutasítása \\ \hline
+		\textbf{Bemenet} & Meghívó elutasítása az értesítések fülön \\ \hline
+		\textbf{Elvárt eredmény} & A felhasználó nem kerül be a csoportba, meghívás megszűnik \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Meghívó elutasítása}
+	\label{tab:meghivo_elutasitasa}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC032 \\ \hline
+		\textbf{Funkció} & Csoport megtakarítás hozzáadása \\ \hline
+		\textbf{Bemenet} & Új megtakarítás név és cél megadása csoport szinten \\ \hline
+		\textbf{Elvárt eredmény} & A csoport megtakarítás létrejön és megjelenik a listában \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Csoport megtakarítás hozzáadása}
+	\label{tab:csoport_megtakaritas_hozzaadas}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC033 \\ \hline
+		\textbf{Funkció} & Összeg elvétele csoport megtakarításból \\ \hline
+		\textbf{Bemenet} & Összeg megadása, amely levonásra kerül a csoport megtakarításból \\ \hline
+		\textbf{Elvárt eredmény} & Az aktuális összeg csökken a megadott összeggel \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Összeg elvétele csoport megtakarításból}
+	\label{tab:csoport_megtakaritas_elvetel}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC034 \\ \hline
+		\textbf{Funkció} & Összeg berakása csoport megtakarításba \\ \hline
+		\textbf{Bemenet} & Összeg megadása, amely hozzáadódik a csoport megtakarításhoz \\ \hline
+		\textbf{Elvárt eredmény} & Az aktuális összeg nő a megadott összeggel \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Összeg berakása csoport megtakarításba}
+	\label{tab:csoport_megtakaritas_berakas}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC035 \\ \hline
+		\textbf{Funkció} & Csoport megtakarítás törlése \\ \hline
+		\textbf{Bemenet} & Kártya melletti kuka ikonra kattintás \\ \hline
+		\textbf{Elvárt eredmény} & A kiválasztott csoport megtakarítás törlődik \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Csoport megtakarítás törlése}
+	\label{tab:csoport_megtakaritas_torles}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{10cm}|}
+		\hline
+		\textbf{Teszteset azonosító} & TC036 \\ \hline
+		\textbf{Funkció} & Kijelentkezés \\ \hline
+		\textbf{Bemenet} & Baloldali menüsávban található kijelentkezés gomb megnyomása \\ \hline
+		\textbf{Elvárt eredmény} & Munkamenet befejezése, átirányítás a bejelentkező felületre \\ \hline
+		\textbf{Tényleges eredmény} & Megfelel az elvárt eredménynek \\ \hline
+	\end{tabular}
+	\caption{Kijelentkezés}
+	\label{tab:kijelentkezes}
+\end{table}
+
+

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using WebApplication1.Data;
 using WebApplication1.Model;
 using WebApplication1.ViewModels;
+using WebApplication1.Utils;
 
 namespace WebApplication1.Pages.Account
 {
@@ -46,7 +47,7 @@ namespace WebApplication1.Pages.Account
                 return Page();
 
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == LoginData.Username);
-            if (user == null || !VerifyPassword(LoginData.Password, user.PasswordHash, user.Salt))
+            if (user == null || !UtilFunctions.VerifyPassword(LoginData.Password, user.PasswordHash, user.Salt))
             {
                 ErrorMessage = "Invalid username or password.";
                 return Page();
@@ -66,13 +67,6 @@ namespace WebApplication1.Pages.Account
                                           authProperties);
 
             return RedirectToPage("/Index"); // Redirect to main page after login
-        }
-
-        private bool VerifyPassword(string password, string storedHash, string storedSalt)
-        {
-            using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(storedSalt));
-            var computedHash = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(password)));
-            return computedHash == storedHash;
         }
     }
 }

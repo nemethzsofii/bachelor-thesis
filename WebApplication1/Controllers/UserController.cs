@@ -13,6 +13,7 @@ using System.Security.Claims;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Security.Cryptography;
 using System.Text;
+using WebApplication1.Utils;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -103,7 +104,7 @@ public class UserController : ControllerBase
         if (userUpdate.TryGetProperty("Email", out var email))
         {
             string emailString = email.GetString();
-            if (IsValidEmail(emailString))
+            if (UtilFunctions.IsValidEmail(emailString))
             {
                 user.Email = email.GetString();
             }
@@ -118,6 +119,10 @@ public class UserController : ControllerBase
         {
             if (userUpdate.TryGetProperty("MonthlySpendingLimit", out var limit))
             {
+                if(limit.GetInt32() < 0)
+                {
+                    return BadRequest("Amount has to be a positive integer!");
+                }
                 user.MonthlySpendingLimit = limit.GetInt32();
             }
         }catch(Exception)
@@ -133,13 +138,16 @@ public class UserController : ControllerBase
                 string newPassword = passwordJson.GetProperty("newPw").GetString();
 
                 var salt = user.Salt;
-                var oldHash = HashPassword(oldPassword, salt);
+                var oldHash = UtilFunctions.HashPassword(oldPassword, salt);
                 if (user.PasswordHash != oldHash)
                 {
                     return BadRequest(new { message = "Old password is incorrect." });
+                }else if (!UtilFunctions.ValidatePasswordStrength(newPassword))
+                {
+                    return BadRequest(new { message = "Password is not strong enough." });
                 }
 
-                var newHash = HashPassword(newPassword, salt);
+                    var newHash = UtilFunctions.HashPassword(newPassword, salt);
                 user.PasswordHash = newHash;
             }
             catch (Exception e)
@@ -164,35 +172,6 @@ public class UserController : ControllerBase
         await _context.SaveChangesAsync();
 
         return NoContent();
-    }
-
-    // Helper functions
-    private static bool IsValidEmail(string emailaddress)
-    {
-        try
-        {
-            MailAddress m = new MailAddress(emailaddress);
-
-            return true;
-        }
-        catch (FormatException)
-        {
-            return false;
-        }
-    }
-
-    private static bool VerifyPassword(string password, string storedHash, string storedSalt)
-    {
-        using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(storedSalt));
-        var computedHash = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(password)));
-        return computedHash == storedHash;
-    }
-
-    private static string HashPassword(string password, string salt)
-    {
-        using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(salt));
-        var computedHash = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(password)));
-        return computedHash;
     }
 
 }

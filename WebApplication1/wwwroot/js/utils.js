@@ -384,3 +384,204 @@ async function listAllTransactions(userId, typeId, group) {
         return null;
     }
 }
+
+async function postInvite(groupId, senderUserId, receiverUserId) {
+    try {
+        const response = await fetch("/api/Invite", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                SenderUserId: senderUserId,
+                ReceiverUserId: receiverUserId,
+                GroupId: groupId
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Error ${response.status}: ${errorText}`);
+        }
+        return response.status;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function deleteGroup(groupId) {
+    try {
+        const response = await fetch(`/api/Group/${groupId}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Error ${response.status}: ${errorText}`);
+        }
+        return response.status;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function getUserByUsername(username) {
+    try {
+        const response = await fetch(`/api/User/username/${username}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" }
+        });
+        if (!response.ok) return null;
+        return response.json();
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function getGroupsForCurrentUser() {
+    const response = await fetch("/api/GroupMembership/ByUser", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        credentials: "include"
+    });
+
+    if (!response.ok) {
+        const errorMessage = await response.json();
+        displayBasicModal("Something went wrong!", "Error");
+        console.error(`Error: ${response.status} - ${errorMessage}`);
+    } else {
+        const result = await response.json();
+        return result;
+    }
+}
+
+async function getUserById(id) {
+    const response = await fetch(`/api/User/${id}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        credentials: "include"
+    });
+
+    if (!response.ok) {
+        const errorMessage = await response.json();
+        console.error(`Error: ${response.status} - ${errorMessage}`);
+        return null;
+    } else {
+        const result = await response.json()
+        return result;
+    }
+}
+async function getRoleById(id) {
+    const response = await fetch(`/api/Role/${id}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        credentials: "include"
+    });
+
+    if (!response.ok) {
+        const errorMessage = await response.json();
+        displayBasicModal("Something went wrong!", "Error");
+        console.error(`Error: ${response.status} - ${errorMessage}`);
+        return null;
+    } else {
+        const result = await response.json()
+        return result;
+    }
+}
+async function getGroupSavings(id) {
+    const response = await fetch(`/api/Saving/groupid/${id}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        credentials: "include"
+    });
+
+    if (!response.ok) {
+        const errorMessage = await response.json();
+        displayBasicModal("Something went wrong!", "Error");
+        console.error(`Error: ${response.status} - ${errorMessage}`);
+        return null;
+    } else {
+        const result = await response.json()
+        return result;
+    }
+}
+
+async function getGroupById(id) {
+    const response = await fetch(`/api/Group/${id}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        credentials: "include"
+    });
+
+    if (!response.ok) {
+        const errorMessage = await response.json();
+        displayBasicModal("Something went wrong!", "Error");
+        console.error(`Error: ${response.status} - ${errorMessage}`);
+        return null;
+    } else {
+        const result = await response.json()
+        return result;
+    }
+}
+
+async function listAllTransactions(userId, type, groupId) {
+    try {
+        var response = "";
+        if (!type && !groupId && userId) {
+            response = await fetch(`api/Transaction/user/${userId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+        } else if (!type && !userId && groupId) {
+            response = await fetch(`/api/Transaction/group/${groupId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+        } else if (!groupId && type && userId) {
+            response = await fetch(`api/Transaction/user/${userId}/type/${type}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+        } else if (!type && userId && groupId) {
+            response = await fetch(`api/Transaction/user/${userId}/group/${group}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+        }
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+
+        var result = await response.json();
+        console.log("Listed transactions successfully:", result);
+        return result;
+    } catch (error) {
+        console.error("Failed to list transactions:", error);
+        return null;
+    }
+}

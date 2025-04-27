@@ -28,8 +28,8 @@
 						</button>
 						<div class="change-container" style="display:none">
 							<label for="change-username">New username:</label>
-							<input type="email" id="change-username" name="change-username" class="change-input" value="" />
-							<button class="save-btn btn-success">Save</button>
+							<input type="email" id="change-username" name="change-username" class="change-input"  required/>
+							<button type="submit" class="save-btn btn-success">Save</button>
 							<button class="cancel-btn btn-outline-danger">Cancel</button>
 						</div>
 					</div>
@@ -45,8 +45,8 @@
 						</button>
 						<div class="change-container" style="display:none">
 							<label for="change-email">New e-mail:</label>
-							<input id="change-email" name="change-email" type="email" class="change-input" value="" />
-							<button class="save-btn btn-success">Save</button>
+							<input id="change-email" name="change-email" type="email" class="change-input" required/>
+							<button type="submit" class="save-btn btn-success">Save</button>
 							<button class="cancel-btn btn-outline-danger">Cancel</button>
 						</div>
 					</div>
@@ -62,8 +62,8 @@
 						</button>
 						<div class="change-container" style="display:none">
 							<label for="change-fullname">New full name:</label>
-							<input type="text" id="change-fullname" name="change-fullname" class="change-input" value="" />
-							<button class="save-btn btn-success">Save</button>
+							<input type="text" id="change-fullname" name="change-fullname" class="change-input" required />
+							<button type="submit" class="save-btn btn-success">Save</button>
 							<button class="cancel-btn btn-outline-danger">Cancel</button>
 						</div>
 					</div>
@@ -111,15 +111,27 @@
 				if (container.classList.contains("email-container")){
 					// case: change e-mail
 					console.log("saving email!");
-					updateUser(currentUserId, {"Email": input.value})
+					if(input.value != ""){
+						updateUser(currentUserId, {"Email": input.value});
+					}else{
+						displayBasicModal("field cannot be empty!", "error");
+					}
 				}else if (container.classList.contains("fullname-container")){
 					// case: change fullname
 					console.log("saving fullname!");
-					updateUser(currentUserId, {"Fullname": input.value})
+					if(input.value != ""){
+						updateUser(currentUserId, {"Fullname": input.value});
+					}else{
+						displayBasicModal("field cannot be empty!", "error");
+					}
 				}else if (container.classList.contains("username-container")){
 					// case: change username
 					console.log("saving username!");
-					updateUser(currentUserId, {"Username": input.value})
+					if(input.value != ""){
+						updateUser(currentUserId, {"Username": input.value});
+					}else{
+						displayBasicModal("field cannot be empty!", "error");
+					}
 				} else{
 					console.log("invalid save class!");
 				}

@@ -51,11 +51,11 @@
                                     <table style="padding: 3px">
                                         <tr>
                                             <td><label for="income-amount-input-field">Amount:</label></td>
-                                            <td><input class="input-amount" id="income-amount-input-field" name="income-amount-input-field" type="number" /></td>
+                                            <td><input class="input-amount" id="income-amount-input-field" name="income-amount-input-field" type="number"/></td>
                                         </tr>
                                         <tr>
                                             <td><label for="income-desc-input-field">Description:</label></td>
-                                            <td><input class="input-desc" id="income-desc-input-field" name="income-desc-input-field" type="text" /></td>
+                                            <td><input class="input-desc" id="income-desc-input-field" name="income-desc-input-field" type="text"/></td>
                                         </tr>
                                     </table>
                                     <div class="categoryIncomeDropdownContainer"></div>
@@ -89,11 +89,11 @@
                                     <table style="padding: 3px">
                                         <tr>
                                             <td><label for="expense-amount-input-field">Amount:</label></td>
-                                            <td><input class="input-amount" id="expense-amount-input-field" name="expense-amount-input-field" type="number" /></td>
+                                            <td><input class="input-amount" id="expense-amount-input-field" name="expense-amount-input-field" type="number" required/></td>
                                         </tr>
                                         <tr>
                                             <td><label for="expense-desc-input-field">Description:</label></td>
-                                            <td><input class="input-desc" id="expense-desc-input-field" name="expense-desc-input-field" type="text" /></td>
+                                            <td><input class="input-desc" id="expense-desc-input-field" name="expense-desc-input-field" type="text" required/></td>
                                         </tr>
                                     </table>
                                     <div class="categoryExpenseDropdownContainer"></div>
@@ -119,11 +119,6 @@
                             <table id="finance-table" class="table table-hover align-middle">
                                 <thead class="table-primary">
                                     <tr>
-                                        <th>Type</th>
-                                        <th>Category</th>
-                                        <th>Description</th>
-                                        <th>Amount</th>
-                                        <th>Date</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tbody">
@@ -131,11 +126,6 @@
                                 </tbody>
                                 <tfoot class="table-light">
                                     <tr>
-                                        <th>Type</th>
-                                        <th>Category</th>
-                                        <th>Description</th>
-                                        <th>Amount</th>
-                                        <th>Date</th>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -237,44 +227,42 @@
                 console.log(err);
             }
 
-
-                var table = new DataTable('#finance-table', {
-                  columnDefs: [
-                    {
-                      targets: 0, // hide the first (id) column from the user
-                      visible: false,
-                      searchable: false
+            var table = new DataTable('#finance-table', {
+                columnDefs: [
+                {
+                    targets: 0, // hide the first (id) column
+                    visible: false,
+                    searchable: false
+                }
+                ],
+                columns: [
+                { title: "Id" },
+                { title: "Type" },
+                { title: "Category" },
+                { title: "Description" },
+                {
+                    title: "Amount",
+                    className: "text-end",
+                    render: function (data, type, row) {
+                    const num = Number(data);
+                    if (type === 'display' || type === 'filter') {
+                        return `${num.toLocaleString('hu-HU')} Ft`;
                     }
-                  ],
-                  columns: [
-                    { title: "Id" },
-                    { title: "Type" },
-                    { title: "Category" },
-                    { title: "Description" },
-                    {
-                      title: "Amount",
-                      className: "text-end",
-                      render: function (data, type, row) {
-                        const num = Number(data);
-                        if (type === 'display' || type === 'filter') {
-                          return `${num.toLocaleString('hu-HU')} Ft`;
-                        }
-                        return num;
-                      }
-                    },
-                    { title: "Date" },
-                    {
-                        title: "Delete",
-                        orderable: false,
-                        searchable: false,
-                        className: "text-center",
-                        render: function (data, type, row, meta) {
-                        return `<button class="btn btn-sm btn-danger delete-btn">🗑</button>`;
-                        }
+                    return num;
                     }
-
-                  ]
-                });
+                },
+                { title: "Date" },
+                {
+                    title: "Delete",
+                    orderable: false,
+                    searchable: false,
+                    className: "text-center",
+                    render: function (data, type, row, meta) {
+                    return `<button class="btn btn-sm btn-danger delete-btn">🗑</button>`;
+                    }
+                }
+                ]
+            });
 
 			async function createHistoryTable(divId){
 				var result = await listAllTransactions(currentUserId);

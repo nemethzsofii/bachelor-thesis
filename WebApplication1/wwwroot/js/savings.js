@@ -156,7 +156,7 @@
                 : '';
 
             let goalText = hasGoal
-                ? `<p class="card-text"><strong>Goal:</strong> ${new Intl.NumberFormat("hu-HU", { style: "currency", currency: "HUF" }).format(data.goalAmount,)}</p>`
+                ? `<p class="card-text"><strong>Goal:</strong> ${new Intl.NumberFormat('hu-HU', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(data.goalAmount)} Ft</p>`
                 : '';
 
             let deadlineText = data.deadline !== null
@@ -195,7 +195,7 @@
             ">
                 <div>
                     <h5 class="card-title" style="color: #444;">${data.description}</h5>
-                    <p class="card-text"><strong>Currently have:</strong> ${new Intl.NumberFormat("hu-HU", { style: "currency", currency: "HUF" }).format(data.currentAmount,)}</p>
+                    <p class="card-text"><strong>Currently have:</strong> ${new Intl.NumberFormat('hu-HU', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(data.currentAmount)} Ft</p>
                     ${goalText}
                     ${deadlineText}
                     ${progressBar}

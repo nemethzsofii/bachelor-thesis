@@ -18,7 +18,7 @@ namespace WebApplication1.Model
 
         [Column("category_id")]
         public int? CategoryId { get; set; }
-        public DateTime Date { get; set; } = DateTime.Now;
+        public DateTime Date { get; set; } = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time"));
         public string? Description { get; set; }
         public int? GroupId { get; set; }
 

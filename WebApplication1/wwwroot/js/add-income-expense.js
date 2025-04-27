@@ -63,6 +63,9 @@
             if (inputDescElement && categoryIdElement) {
                 var inputDesc = inputDescElement.value;
                 var categoryId = categoryIdElement.value;
+                if (categoryId == "") {
+                    categoryId = null;
+                }
             }
             
             if (container.classList.contains("group-card")) {
