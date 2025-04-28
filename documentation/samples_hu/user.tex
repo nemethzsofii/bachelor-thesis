@@ -35,7 +35,13 @@ Mivel egy webes alkalmazásról van szó, ezért különleges gépigény nem sz�
 \end{table}
 
 \section{Felhasználói esetek}
-Az alkalmazás felhasználói eseteit ez a bejegyzés fogja részletesen taglalni, képernyőképekkel kiegészítve.
+Az alkalmazás felhasználói eseteit ez a bejegyzés fogja részletesen taglalni, képernyőképekkel kiegészítve. A felhasználói esetek bemutatását a \ref{fig:big-use-case}. ábra mutatja be, és az utána következő fejezetek fejtik ki.
+\begin{figure}[H]
+	\centering
+	\includegraphics[height=220px]{img/big-use-case}
+	\caption{Használati eset diagram: Általános}
+	\label{fig:big-use-case}
+\end{figure}
 
 \subsection{Fiók}
 A felhasználói fiókok kezelése a szokásos Regisztráció – Bejelentkezés – Profil funkciókra épül. A felhasználónak a webalkalmazás elérése érdekében regisztrálnia kell, majd sikeres regisztrációt követően bejelentkezhet a felületre. A belső oldalra érve elérhető egy "Profil" oldal a bal menüsávból is, illetve a jobb felső sarokban az avatar ikonra kattintva a legördülő menüből is kiválasztható ez a menüpont. Szintén ezen a két helyen találjuk a kijelentkezés gombot is, amellyel megszüntethetjük az adott munkamenetet és kiléphetünk a fiókból. Ezen funkciók részletes leírását a \ref{tab:account}. táblázat foglalja össze.

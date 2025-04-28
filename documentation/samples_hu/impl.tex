@@ -144,14 +144,52 @@ A MySQL-t sok szempont miatt szokták kisebb alkalmazásokhoz
 használni, ezek közé tartozik például az a nem elhanyagolható
 indok, hogy teljesen ingyenes a használata. Illetve szintén
 az egyszerűségét tudnám kiemelni, és a kompatibilitását az ASP.NET keretrendszerrel. Egy darab adatbázis lett létrehozva, azon belül több tábla található, melyek természetesen kapcsolódnak egymáshoz. Az adatmodell a relációs adatbázisok normalizálási elvein alapul, és a harmadik normálformáig (3NF) került kialakításra.
-A szerkezetet és a logikai kapcsolatokat az egyes táblák között a \ref{fig:database-structure}. ábra szemlélteti.
+A szerkezetet és a logikai kapcsolatokat az egyes táblák között a \ref{fig:database-structure}. ábra szemlélteti. A táblák részletes leírását pedig a \ref{tab:db-desc}. táblázat tartalmazza.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[height=300px]{img/db-model}
+	\includegraphics[height=320px]{img/0000}
 	\caption{Adatbázis struktúra}
 	\label{fig:database-structure}
 \end{figure}
+
+\begin{longtable}{ | m{0.25\textwidth} | m{0.65\textwidth} | }
+	\hline
+	\textbf{Tábla} & \textbf{Leírás} \\
+	\hline
+	\endfirsthead
+	
+	\hline
+	\textbf{Tábla} & \textbf{Leírás} \\
+	\hline
+	\endhead
+	
+	\hline
+	\endfoot
+	
+	\hline
+	\caption{Adatbázis táblák magyarázata} \label{tab:db-desc} \\
+	\endlastfoot
+	
+	Users & A rendszer felhasználóit tartalmazza. Itt tároljuk az alapvető adatokat (felhasználónév, e-mail, teljes név), a hitelesítéshez szükséges információkat (salt és jelszóhash), valamint a havi költési limitet is. \\
+	\hline
+	Groups & A csoportokat kezeli, amelyekbe a felhasználók beléphetnek. Minden csoportnak van neve, típusa (pl. család, baráti társaság, ez szabad szöveges érték), leírása, létrehozó felhasználója és létrehozási dátuma. \\
+	\hline
+	GroupMemberships & A felhasználók csoporttagságait rögzíti. Megmutatja, hogy ki melyik csoporthoz tartozik, milyen szerepkörben (pl. admin vagy tag), és mióta tagja a csoportnak. \\
+	\hline
+	Roles & Az egyes csoporttagságokhoz rendelhető szerepköröket definiálja, például adminisztrátor vagy sima tag. A szerepkörök szabályozzák a felhasználók jogosultságait a csoportban. A csoport létrehozójának "Admin" jogköre lesz automatikusan, a felvett tagnak pedig "Member".\\
+	\hline
+	Transactions & A felhasználók által rögzített pénzügyi tranzakciókat tárolja. Minden tranzakcióhoz tartozik összeg, típus (bevétel vagy kiadás), kategória (pl. étel, szórakozás), dátum, leírás, és adott esetben kapcsolódó csoport is. A "GroupId" értéke null, ha személyes a tranzakció. \\
+	\hline
+	TransactionTypes & A tranzakciók típusait (bevétel, kiadás) határozza meg. \\
+	\hline
+	Categories & A tranzakciókhoz tartozó kategóriákat tartalmazza, mint például élelmiszer, közlekedés, szórakozás stb. Segíti a kiadások és bevételek részletesebb elemzését. \\
+	\hline
+	Savings & A felhasználók által kitűzött megtakarítási célokat tárolja. A célösszeg és a határidő opcionális adatok, tehát lehet null értékük. A "GroupId" értéke is null, ha személyes megtakarítás. \\
+	\hline
+	Invites & A csoportokba történő meghívásokat kezeli. Menti, hogy ki küldött meghívót kinek, melyik csoportba, és hogy a meghívás elfogadásra került-e. Az elfogadott meghívók "Accepted" értéke 1-re vált a default 0-ról. Elutasítás esetén a meghívó törlődik a táblából. \\
+\end{longtable}
+
 
 
 \subsection{Backend - Adatbázis kapcsolat}

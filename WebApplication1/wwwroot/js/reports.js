@@ -101,12 +101,10 @@
 
         const ctx = document.getElementById("finances-sum-month-area-chart");
 
-        // Destroy old chart if exists
         if (monthlySpendingChart) {
             monthlySpendingChart.destroy();
         }
 
-        // Create new chart
         monthlySpendingChart = new Chart(ctx, {
             type: 'bar',
             data: {
