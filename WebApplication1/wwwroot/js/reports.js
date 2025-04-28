@@ -340,3 +340,125 @@ async function updateChart() {
         }
     });
 }
+
+async function drawChartForGroup(groupId, transactions) {
+    const ctx = document.getElementById(`group-chart-${groupId}`);
+
+    if (!ctx) {
+        console.error(`Canvas with id group-chart-${groupId} not found.`);
+        return;
+    }
+
+    const incomeTransactions = transactions.filter(t => t.typeId === 1);
+    const expenseTransactions = transactions.filter(t => t.typeId === 2);
+
+    const incomeData = groupByDay(incomeTransactions);
+    const expenseData = groupByDay(expenseTransactions);
+    const daysLabels = getDaysInMonth();
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: daysLabels,
+            datasets: [
+                {
+                    label: "Income",
+                    lineTension: 0.3,
+                    backgroundColor: "rgba(78, 223, 115, 0.05)",
+                    borderColor: "rgba(78, 223, 115, 1)",
+                    pointRadius: 3,
+                    pointBackgroundColor: "rgba(78, 223, 115, 1)",
+                    pointBorderColor: "rgba(78, 223, 115, 1)",
+                    data: incomeData
+                },
+                {
+                    label: "Expense",
+                    lineTension: 0.3,
+                    backgroundColor: "rgba(223, 78, 78, 0.05)",
+                    borderColor: "rgba(223, 78, 78, 1)",
+                    pointRadius: 3,
+                    pointBackgroundColor: "rgba(223, 78, 78, 1)",
+                    pointBorderColor: "rgba(223, 78, 78, 1)",
+                    data: expenseData
+                }
+            ]
+        },
+        options: {
+            maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 25,
+                    top: 25,
+                    bottom: 0
+                }
+            },
+            scales: {
+                xAxes: [{
+                    time: {
+                        unit: 'day'
+                    },
+                    gridLines: {
+                        display: false,
+                        drawBorder: false
+                    },
+                    ticks: {
+                        maxTicksLimit: 10
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: getCurrentMonth(),
+                        fontSize: 11,
+                        fontStyle: "bold"
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        maxTicksLimit: 5,
+                        padding: 10,
+                        callback: function (value) {
+                            return 'Ft' + number_format(value);
+                        }
+                    },
+                    gridLines: {
+                        color: "rgb(234, 236, 244)",
+                        zeroLineColor: "rgb(234, 236, 244)",
+                        drawBorder: false,
+                        borderDash: [2],
+                        zeroLineBorderDash: [2]
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Amount (Ft)",
+                        fontSize: 11,
+                        fontStyle: "bold"
+                    }
+                }]
+            },
+            legend: {
+                display: true
+            },
+            tooltips: {
+                backgroundColor: "rgb(255,255,255)",
+                bodyFontColor: "#858796",
+                titleMarginBottom: 10,
+                titleFontColor: '#6e707e',
+                titleFontSize: 14,
+                borderColor: '#dddfeb',
+                borderWidth: 1,
+                xPadding: 15,
+                yPadding: 15,
+                displayColors: true,
+                intersect: false,
+                mode: 'index',
+                caretPadding: 10,
+                callbacks: {
+                    label: function (tooltipItem, chart) {
+                        var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+                        return datasetLabel + ': Ft' + number_format(tooltipItem.yLabel);
+                    }
+                }
+            }
+        }
+    });
+}

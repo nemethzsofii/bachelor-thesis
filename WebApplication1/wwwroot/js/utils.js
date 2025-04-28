@@ -96,8 +96,6 @@ async function getMonthlySpendingLimit(userId) {
         const user = await response.json();
         try {
             limit = user["monthlySpendingLimit"];
-            console.log(limit);
-            console.log(user);
             if (limit) {
                 return parseInt(limit);
             }
