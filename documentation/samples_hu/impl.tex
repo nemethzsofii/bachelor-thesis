@@ -20,6 +20,92 @@
 	\label{fig:project-structure}
 \end{figure}
 
+\subsection{Külső függőségek, technológiák}
+
+Az alkalmazás fejlesztése során az alábbi külső csomagok és könyvtárak kerültek felhasználásra:
+
+\subsection{Külső függőségek, technológiák}
+
+Csomagok hozzáadása a projekthez történhet a NuGet Package Manager vagy CDN segítségével is. Az alkalmazás fejlesztése során az alábbi külső csomagok és könyvtárak kerültek felhasználásra:
+
+\begin{itemize}
+	\item \textbf{Entity Framework Core (EF Core)} – ORM technológia, amely lehetővé teszi az adatbázissal való objektumorientált munkát. Kiemelten hasznos a LINQ támogatása és a migrációs rendszer.\footnote{A migrációk működéséről az adatbázissal foglalkozó fejezet fog részletesebb leírást nyújtani.}
+	\item \textbf{Pomelo.EntityFrameworkCore.MySql} – Az EF Core és a MySQL adatbázis közötti kapcsolatot biztosító NuGet csomag.
+	\item \textbf{MySqlConnector} – Könnyűsúlyú, aszinkron támogatással rendelkező ADO.NET driver MySQL-hez.
+	\item \textbf{Swashbuckle.AspNetCore} – A Swagger UI integrálására szolgáló csomag, amely lehetővé teszi az API-k dokumentálását és tesztelését.
+	\item \textbf{Bootstrap} – Reszponzív front-end keretrendszer, amely előre definiált CSS osztályokat és JavaScript komponenseket biztosít a felhasználói felület egységes és gyors kialakításához. Az alkalmazás a Bootstrap 4-es verzióját használja, amely lehetővé teszi különböző vizuális elemek (például gombok, táblázatok, rácsszerkezetek) egyszerű alkalmazását csupán megfelelő class attribútumok beállításával. Nem csak az esztétikus megjelenésben nyújt segítséget a Bootstraom hanem interaktív viselkedések (pl. modális ablakok, lenyíló menük) hozzáadásában is, beépített JavaScript funkciók segítségével.
+	\item \textbf{FontAwesome (CDN)} – Ikonok használatához alkalmazott ikoncsomag.
+	\item \textbf{QuestPDF} -Az alkalmazás lehetőséget nyújt az adatok exportálására nyomtatható formátumban, egy PDF fájl formájában. Erre a célra a QuestPDF nevű nyílt forráskódú .NET könyvtárat használtam.
+	
+	A QuestPDF lehetővé teszi professzionális minőségű PDF fájlok generálását teljes mértékben C\# nyelvben, deklaratív stílusban. Előnyei:
+	\begin{itemize}
+		\item Reszponzív dokumentumelrendezés
+		\item Könnyen tanulható, C\#-os fluent API
+		\item Támogatja a táblázatokat, stílusokat, színeket, képeket
+	\end{itemize}
+
+A generálás egy `Document.Create(...)` hívással történik, ahol meghatározásra kerül a dokumentum szerkezete, stílusa, tartalma. Például:
+	
+	\lstset{caption={PDF generálás példa}, label=src:pdf}
+	\begin{lstlisting}[language={[Sharp]C}]
+		Document.Create(container =>
+		{
+			container.Page(page =>
+			{
+				page.Content()
+				.Column(col =>
+				{
+					col.Item().Text("Kiadasi osszesito");
+					col.Item().Text("Osszes tranzakcio: 42");
+				});
+			});
+		}).GeneratePdf("output.pdf");
+	\end{lstlisting}
+	
+	A PDF fájl generálása szerveroldalon történik, a Utils/PDFGenerator.cs osztályban megvalósított logika segítségével. A kész fájl ezután egy HTTP végpont (Controller) segítségével érhető el és tölthető le a felhasználó által.
+	
+	\lstset{caption={PDF generálás API végpont}, label=src:pdf}
+	\begin{lstlisting}[language={[Sharp]C}]
+		[HttpGet("DownloadReportForCurrent")]
+		public async Task<IActionResult> DownloadReport()
+		{
+			// get data
+			
+			var pdf = new PdfGenerator(user.Fullname, transactions);
+			var pdfBytes = pdf.GeneratePdf();
+			
+			return File(pdfBytes, "application/pdf", $"report_{user.Fullname}_{DateTime.Now:yyyyMMdd}.pdf");
+		}
+	\end{lstlisting}
+	\item \textbf{Chart.js} – Az alkalmazás az adatok vizuális megjelenítésére a népszerű JavaScript könyvtárat használja, amely interaktív, reszponzív grafikonokat képes kirajzolni HTML canvas elemeken keresztül.
+	
+	Két típusú diagram került megvalósításra, melyek közül az utóbbi csoportokban nem elérhető:
+	\begin{itemize}
+		\item Napi bontású bevétel és kiadás alakulása az aktuális hónapban (vonaldiagram)
+		\item Havi bontású bevétel–kiadás összehasonlító diagram (oszlopdiagram)
+	\end{itemize}
+	
+	A grafikonok kliensoldalon, JavaScript segítségével jönnek létre. Az adatok aszinkron módon kerülnek lekérésre az API végpontokról, a felhasználó azonosítója alapján. A lekért tranzakciós adatok formázása és csoportosítása után a rendszer automatikusan diagramot generál azok vizuális megjelenítésére.
+	
+	Az alábbi példában látható egy egyszerűbb diagram kirajzolása:
+	
+	\lstset{caption={Chart.js alapú havi diagram kirajzolása}, label=src:chartjs}
+	\begin{lstlisting}[language={[Sharp]C}]
+ 	const ctx = document.getElementById("finance-chart");
+ 	// <canvas> elem
+ 	const monthlySpendingChart = new Chart(ctx, {
+ 		type: 'bar',
+ 		data: {
+ 			labels: months, // Jan - Dec
+ 			datasets: [{
+ 				label: "Income",
+ 				data: incomeData // from backend
+ 			}]
+ 		}
+ 	});
+	\end{lstlisting}
+\end{itemize}
+
 \subsection{Architektúra leírása}
 Ahogy a \ref{fig:project-structure}. ábrán is látható, az egész webalkalmazás egy projekten belül lett kialakítva. A .NET-es integrált frontend és backend fejlesztés hatalmas előnye a rendszerezettség, a szabályszerű kommunikáció az egyes rétegek között (illetve ezen rétegek helyes elkülönölése), és a rengeteg beépített segédfüggvény/konfiguráció/cshtml tag. Kiemelném még a modellek használatát is, amelyek egyszerűbb és biztonságosabb (például SQL injection elleni védelem) adatbázis kezelést biztosítanak.
 
@@ -730,7 +816,6 @@ A későbbi fejlesztések során migrációkat használhatunk az adatbázis verz
 	\caption{Összeg berakása csoport megtakarításba}
 	\label{tab:csoport_megtakaritas_berakas}
 \end{table}
-
 \begin{table}[h!]
 	\centering
 	\begin{tabular}{|l|p{10cm}|}
@@ -744,7 +829,6 @@ A későbbi fejlesztések során migrációkat használhatunk az adatbázis verz
 	\caption{Csoport megtakarítás törlése}
 	\label{tab:csoport_megtakaritas_torles}
 \end{table}
-
 \begin{table}[h!]
 	\centering
 	\begin{tabular}{|l|p{10cm}|}
