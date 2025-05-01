@@ -18,8 +18,8 @@
             createSavingsCard(savingsCardsContainers[i], response[j]);
         }
 
-        savingsCardsContainers[i].addEventListener('click', async function (e) {
-            console.log("clicked");
+        document.addEventListener('click', async function (e) {
+            console.log("clicked saving");
             if (e.target.classList.contains('add-savings-button')) {
                 try {
                     const id = e.target.dataset.id;
@@ -82,7 +82,7 @@
         const amount = parseFloat(input.value);
 
         if (isNaN(amount) || amount <= 0) {
-            alert("Please enter a valid amount to withdraw.");
+            displayBasicModal("Please enter a valid amount to withdraw.", "error");
             return;
         }
 
@@ -94,7 +94,7 @@
             location.reload();
         } catch (err) {
             console.error("Withdraw from Savings failed:", err);
-            alert("Something went wrong while withdrawing.");
+            displayBasicModal("Something went wrong while withdrawing.", "error");
         }
     }
 

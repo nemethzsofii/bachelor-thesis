@@ -1,4 +1,16 @@
 ﻿document.addEventListener("DOMContentLoaded", async function () {
+    function number_format(number, decimals = 0) {
+        if (isNaN(number)) return '0 Ft';
+
+        const fixed = Number(number).toFixed(decimals);
+        let [intPart, decPart] = fixed.split('.');
+
+        intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+        const formatted = decPart ? `${intPart},${decPart}` : intPart;
+        return `${formatted} Ft`;
+    }
+
     var currentUserId = await getCurrentUserId();
 
     var monthlySpendingLimit = await getMonthlySpendingLimit(currentUserId);
@@ -57,7 +69,7 @@
                             label: function (context) {
                                 const label = context.label ?? '';
                                 const value = context.raw ?? 0;
-                                return `${label}: ${value.toLocaleString('hu-HU')} Ft`;
+                                return `${label}: ${number_format(value)}`;
                             }
                         }
                     },

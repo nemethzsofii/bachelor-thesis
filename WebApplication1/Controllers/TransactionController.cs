@@ -12,6 +12,7 @@ using System;
 using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using System.Diagnostics;
 using System.Globalization;
+using System.ComponentModel.DataAnnotations;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -55,8 +56,10 @@ public class TransactionController : ControllerBase
 
     // 🔹 POST: api/Transaction/csv (Create new transactions by uploading a csv file)
     [HttpPost("csv")]
-    public async Task<IActionResult> UploadCsvTransactions([FromForm] IFormFile file)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UploadCsvTransactions([FromForm] CsvUploadModel model)
     {
+        var file = model.File;
         int currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
         if (file == null || file.Length == 0)
@@ -275,11 +278,17 @@ public class TransactionController : ControllerBase
         var transactions = await _context.Transactions
             .Where(t => t.UserId == currentUserId)
             .ToListAsync();
-
-        var pdf = new PdfGenerator(user.Fullname, transactions);
+        var categories = await _context.Categories.ToListAsync();
+        var pdf = new PdfGenerator(user.Fullname, transactions, categories);
         var pdfBytes = pdf.GeneratePdf();
 
         return File(pdfBytes, "application/pdf", $"report_{user.Fullname}_{DateTime.Now:yyyyMMdd}.pdf");
     }
 
 }
+public class CsvUploadModel
+{
+    [Required]
+    public IFormFile File { get; set; }
+}
+

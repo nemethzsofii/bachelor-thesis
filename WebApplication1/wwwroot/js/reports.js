@@ -4,8 +4,6 @@ function number_format(number, decimals = 0) {
 
     const fixed = Number(number).toFixed(decimals);
     let [intPart, decPart] = fixed.split('.');
-
-    // Add space as thousands separator
     intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
     const formatted = decPart ? `${intPart},${decPart}` : intPart;
@@ -382,9 +380,9 @@ async function drawChartForGroup(groupId, transactions) {
     const incomeTransactions = transactions.filter(t => t.typeId === 1);
     const expenseTransactions = transactions.filter(t => t.typeId === 2);
 
-    const incomeData = groupByDay(incomeTransactions);
-    const expenseData = groupByDay(expenseTransactions);
-    const daysLabels = getDaysInMonth();
+    const incomeData = groupByDayLastMonth(incomeTransactions);
+    const expenseData = groupByDayLastMonth(expenseTransactions);
+    const daysLabels = getDaysInLastMonth();
 
     new Chart(ctx, {
         type: 'line',

@@ -4,6 +4,7 @@ using QuestPDF.Infrastructure;
 using System.Globalization;
 using SkiaSharp;
 using WebApplication1.Model;
+using WebApplication1.Data;
 
 namespace WebApplication1.Utils
 {
@@ -11,11 +12,13 @@ namespace WebApplication1.Utils
     {
         private readonly string _fullName;
         private readonly List<Transaction> _transactions;
+        private readonly List<Category> _categories;
 
-        public PdfGenerator(string fullName, List<Transaction> transactions)
+        public PdfGenerator(string fullName, List<Transaction> transactions, List<Category> categories)
         {
             _fullName = fullName;
             _transactions = transactions;
+            _categories = categories;
         }
         public byte[] GeneratePdf()
         {
@@ -105,7 +108,11 @@ namespace WebApplication1.Utils
                             {
                                 table.Cell().Text(t.Date.ToString("yyyy-MM-dd"));
                                 table.Cell().Text(t.TypeId.ToString());
-                                table.Cell().Text(t.CategoryId?.ToString() ?? "-");
+                                var categoryName = t.CategoryId != null
+                                  ? _categories.FirstOrDefault(c => c.Id == t.CategoryId)?.Name ?? "-"
+                                  : "-";
+
+                                table.Cell().Text(categoryName);
                                 table.Cell().Text($"{t.Amount:N0} Ft").FontColor(t.TypeId == 2 ? Colors.Red.Darken2 : Colors.Green.Darken2);
                                 table.Cell().Text(t.Description ?? "-");
                             }
