@@ -1,11 +1,15 @@
 ﻿// styling
-function number_format(number) {
-    number = (number + '').replace(/[^\d]/g, '');
-    if (number.length <= 2) return number;
+function number_format(number, decimals = 0) {
+    if (isNaN(number)) return '0 Ft';
 
-    let reversed = number.split('').reverse().join('');
-    let parts = reversed.match(/.{1,2}/g);
-    return parts.map(p => p.split('').reverse().join('')).reverse().join(' ');
+    const fixed = Number(number).toFixed(decimals);
+    let [intPart, decPart] = fixed.split('.');
+
+    // Add space as thousands separator
+    intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+    const formatted = decPart ? `${intPart},${decPart}` : intPart;
+    return `${formatted} Ft`;
 }
 
 document.addEventListener("DOMContentLoaded", async function () {
@@ -155,7 +159,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         stacked: false,
                         ticks: {
                             callback: function (value) {
-                                return 'Ft' + number_format(value);
+                                return number_format(value);
                             }
                         },
                         scaleLabel: {
@@ -197,34 +201,55 @@ async function fetchTransactions(userId, type) {
     }
 }
 
-function groupByDay(transactions) {
-    let today = new Date();
-    let currentYear = today.getFullYear();
-    let currentMonth = today.getMonth();
-    let dailyData = new Array(31).fill(0);
+function groupByDayLastMonth(transactions) {
+    const today = new Date();
+
+    // Calculate last month and year
+    let lastMonth = today.getMonth() - 1;
+    let year = today.getFullYear();
+    if (lastMonth < 0) {
+        lastMonth = 11;
+        year -= 1;
+    }
+
+    const daysInLastMonth = new Date(year, lastMonth + 1, 0).getDate();
+    let dailyData = new Array(daysInLastMonth).fill(0);
 
     transactions.forEach(transaction => {
         let date = new Date(transaction.date);
-        if (date.getFullYear() === currentYear && date.getMonth() === currentMonth) {
+        if (date.getFullYear() === year && date.getMonth() === lastMonth) {
             let dayIndex = date.getDate() - 1;
             dailyData[dayIndex] += transaction.amount;
         }
     });
-    return dailyData.slice(0, today.getDate());
+
+    return dailyData;
 }
 
-function getCurrentMonth() {
+function getLastMonthName() {
     const months = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
     ];
-    const currentMonthIndex = new Date().getMonth();
-    return months[currentMonthIndex];
+    const now = new Date();
+    let monthIndex = now.getMonth() - 1;
+    if (monthIndex < 0) monthIndex = 11;
+    return months[monthIndex];
 }
-function getDaysInMonth() {
-    let today = new Date();
-    let days = [];
-    for (let i = 1; i <= today.getDate(); i++) {
+
+function getDaysInLastMonth() {
+    const today = new Date();
+
+    let lastMonth = today.getMonth() - 1;
+    let year = today.getFullYear();
+    if (lastMonth < 0) {
+        lastMonth = 11;
+        year -= 1;
+    }
+
+    const days = [];
+    const daysInMonth = new Date(year, lastMonth + 1, 0).getDate();
+    for (let i = 1; i <= daysInMonth; i++) {
         days.push(i + ".");
     }
     return days;
@@ -233,41 +258,35 @@ function getDaysInMonth() {
 async function updateChart() {
     const userId = document.getElementById("current-user-id").value;
 
-    var diagramTitle = document.getElementById("finances-curr-month-area-chart-title");
-    diagramTitle.textContent = "Financial Overview - " + getCurrentMonth();
+    const diagramTitle = document.getElementById("finances-curr-month-area-chart-title");
+    diagramTitle.textContent = "Financial Overview - " + getLastMonthName();
 
     const incomeTransactions = await fetchTransactions(userId, 1);
     const expenseTransactions = await fetchTransactions(userId, 2);
 
-    const incomeData = groupByDay(incomeTransactions);
-    const expenseData = groupByDay(expenseTransactions);
-    const daysLabels = getDaysInMonth();
+    const incomeData = groupByDayLastMonth(incomeTransactions);
+    const expenseData = groupByDayLastMonth(expenseTransactions);
+    const daysLabels = getDaysInLastMonth();
 
-    var ctx = document.getElementById("finances-curr-month-area-chart");
-    var chart1 = new Chart(ctx, {
+    const ctx = document.getElementById("finances-curr-month-area-chart");
+    const chart1 = new Chart(ctx, {
         type: 'line',
         data: {
             labels: daysLabels,
             datasets: [
                 {
                     label: "Income",
-                    lineTension: 0.3,
+                    data: incomeData,
                     backgroundColor: "rgba(78, 223, 115, 0.05)",
                     borderColor: "rgba(78, 223, 115, 1)",
-                    pointRadius: 3,
-                    pointBackgroundColor: "rgba(78, 223, 115, 1)",
-                    pointBorderColor: "rgba(78, 223, 115, 1)",
-                    data: incomeData
+                    pointRadius: 3
                 },
                 {
                     label: "Expense",
-                    lineTension: 0.3,
+                    data: expenseData,
                     backgroundColor: "rgba(223, 78, 78, 0.05)",
                     borderColor: "rgba(223, 78, 78, 1)",
-                    pointRadius: 3,
-                    pointBackgroundColor: "rgba(223, 78, 78, 1)",
-                    pointBorderColor: "rgba(223, 78, 78, 1)",
-                    data: expenseData
+                    pointRadius: 3
                 }
             ]
         },
@@ -295,7 +314,7 @@ async function updateChart() {
                     },
                     scaleLabel: {
                         display: true,
-                        labelString: getCurrentMonth(),
+                        labelString: getLastMonthName(),
                         fontSize: 11,
                         fontStyle: "bold"
                     }
@@ -305,7 +324,7 @@ async function updateChart() {
                         maxTicksLimit: 5,
                         padding: 10,
                         callback: function (value) {
-                            return 'Ft' + number_format(value);
+                            return number_format(value);
                         }
                     },
                     gridLines: {
@@ -343,11 +362,12 @@ async function updateChart() {
                 callbacks: {
                     label: function (tooltipItem, chart) {
                         var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
-                        return datasetLabel + ': Ft' + number_format(tooltipItem.yLabel);
+                        return datasetLabel + ': ' +number_format(tooltipItem.yLabel);
                     }
                 }
             }
         }
+        
     });
 }
 
@@ -417,7 +437,7 @@ async function drawChartForGroup(groupId, transactions) {
                     },
                     scaleLabel: {
                         display: true,
-                        labelString: getCurrentMonth(),
+                        labelString: getLastMonthName(),
                         fontSize: 11,
                         fontStyle: "bold"
                     }
@@ -427,7 +447,7 @@ async function drawChartForGroup(groupId, transactions) {
                         maxTicksLimit: 5,
                         padding: 10,
                         callback: function (value) {
-                            return 'Ft' + number_format(value);
+                            return number_format(value);
                         }
                     },
                     gridLines: {
@@ -465,7 +485,7 @@ async function drawChartForGroup(groupId, transactions) {
                 callbacks: {
                     label: function (tooltipItem, chart) {
                         var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
-                        return datasetLabel + ': Ft' + number_format(tooltipItem.yLabel);
+                        return datasetLabel + ': ' + number_format(tooltipItem.yLabel);
                     }
                 }
             }
