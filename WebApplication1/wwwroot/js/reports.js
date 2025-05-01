@@ -1,4 +1,14 @@
-﻿document.addEventListener("DOMContentLoaded", async function () {
+﻿// styling
+function number_format(number) {
+    number = (number + '').replace(/[^\d]/g, '');
+    if (number.length <= 2) return number;
+
+    let reversed = number.split('').reverse().join('');
+    let parts = reversed.match(/.{1,2}/g);
+    return parts.map(p => p.split('').reverse().join('')).reverse().join(' ');
+}
+
+document.addEventListener("DOMContentLoaded", async function () {
     // draw charts
     updateChart();
     var currentYear = new Date().getFullYear().toString();
@@ -187,21 +197,32 @@ async function fetchTransactions(userId, type) {
     }
 }
 
-function groupByDay(transactions) {
-    let today = new Date();
-    let currentYear = today.getFullYear();
-    let currentMonth = today.getMonth();
-    let dailyData = new Array(31).fill(0);
+function groupByDayLastMonth(transactions) {
+    const today = new Date();
+
+    // Calculate previous month and year
+    let prevMonth = today.getMonth() - 1;
+    let year = today.getFullYear();
+    if (prevMonth < 0) {
+        prevMonth = 11;
+        year -= 1;
+    }
+
+    // Get number of days in previous month
+    const daysInPrevMonth = new Date(year, prevMonth + 1, 0).getDate();
+    let dailyData = new Array(daysInPrevMonth).fill(0);
 
     transactions.forEach(transaction => {
         let date = new Date(transaction.date);
-        if (date.getFullYear() === currentYear && date.getMonth() === currentMonth) {
+        if (date.getFullYear() === year && date.getMonth() === prevMonth) {
             let dayIndex = date.getDate() - 1;
             dailyData[dayIndex] += transaction.amount;
         }
     });
-    return dailyData.slice(0, today.getDate());
+
+    return dailyData;
 }
+
 
 function getCurrentMonth() {
     const months = [
